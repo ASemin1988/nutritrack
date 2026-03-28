@@ -6,7 +6,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>NutriTrack</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 <style>
 html { box-sizing: border-box; }
 *, *:before, *:after { box-sizing: inherit; }
@@ -448,8 +447,13 @@ body {
     </div>
 
     <!-- SCANNER -->
-    <button class="scan-btn" id="scanBtn">📷 Штрих-код / Сканировать</button>
-    <div class="scan-area" id="scanArea">
+    <div style="margin-bottom:10px">
+      <label for="cameraInput" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#dcfce7;border:1.5px solid #86efac;border-radius:13px;color:#16a34a;font-size:15px;font-weight:800;cursor:pointer">
+        📷 Открыть камеру для сканирования
+      </label>
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"/>
+    </div>
+    <div id="scanArea" class="scan-area">
       <video id="scanVid" playsinline muted autoplay></video>
       <div class="scan-ui">
         <div class="scan-box"></div>
@@ -840,99 +844,48 @@ function openOv(id){document.getElementById(id).classList.add("on");}
 function closeOv(id){document.getElementById(id).classList.remove("on");}
 document.querySelectorAll(".ov").forEach(function(ov){ov.addEventListener("click",function(e){if(e.target===ov){stopScan();closeOv(ov.id);}});});
 
-// ═══════ BARCODE SCANNER ═══════
-document.getElementById("scanBtn").addEventListener("click",startScan);
-document.getElementById("scanX").addEventListener("click",stopScan);
+// ═══════ BARCODE SCANNER via native camera ═══════
+document.getElementById("cameraInput").addEventListener("change", function(e){
+  var file = e.target.files && e.target.files[0];
+  if(!file) return;
+  // Reset input so same file can be picked again
+  e.target.value = "";
 
-function startScan(){
-  showManualBarcodeInput();
-
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){return;}
-
-  var area=document.getElementById("scanArea");
-  var vid=document.getElementById("scanVid");
-  area.classList.add("on");
-
-  navigator.mediaDevices.getUserMedia({
-    video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},
-    audio:false
-  })
-  .then(function(stream){
-    scanStream=stream;
-    vid.srcObject=stream;
-    vid.play();
-    scanWithQuagga(vid);
-  })
-  .catch(function(err){
-    area.classList.remove("on");
-    toast("Нет доступа к камере: "+err.message);
-  });
-}
-
-function scanWithQuagga(vid){
-  // Use Quagga if loaded
-  if(typeof Quagga!=="undefined"){
-    Quagga.init({
-      inputStream:{
-        type:"LiveStream",
-        target:vid,
-        constraints:{facingMode:"environment"}
-      },
-      decoder:{
-        readers:["ean_reader","ean_8_reader","upc_reader","upc_e_reader","code_128_reader"]
-      },
-      locate:true,
-      numOfWorkers:0,
-      frequency:10
-    },function(err){
-      if(err){
-        toast("Quagga error: "+err);
-        tryNativeDetector(vid);
-        return;
-      }
-      Quagga.start();
-      Quagga.onDetected(function(result){
-        var code=result.codeResult.code;
-        if(code){
-          Quagga.stop();
-          stopScan();
-          fetchCode(code);
-        }
-      });
-    });
-    return;
-  }
-  // Fallback: native BarcodeDetector
-  tryNativeDetector(vid);
-}
-
-function tryNativeDetector(vid){
-  if(!window.BarcodeDetector){
-    toast("Сканер недоступен — введите код вручную");
-    return;
-  }
-  BarcodeDetector.getSupportedFormats().then(function(formats){
-    var bd=new BarcodeDetector({formats:formats});
-    var scanning=true;
-    if(scanStream)scanStream._stopScan=function(){scanning=false;};
-
-    function tick(){
-      if(!scanning||!vid.srcObject)return;
-      bd.detect(vid).then(function(codes){
-        if(codes&&codes.length>0){
-          scanning=false;
-          var code=codes[0].rawValue;
-          stopScan();
-          fetchCode(code);
+  if(window.BarcodeDetector){
+    var img = new Image();
+    img.onload = function(){
+      var bd = new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]});
+      bd.detect(img).then(function(codes){
+        if(codes && codes.length > 0){
+          fetchCode(codes[0].rawValue);
         } else {
-          setTimeout(tick,300);
+          toast("Штрих-код не найден на фото. Попробуйте ещё раз или введите вручную.");
         }
-      }).catch(function(){if(scanning)setTimeout(tick,500);});
-    }
-    setTimeout(tick,500); // give video time to start
-  }).catch(function(){
-    toast("Сканер недоступен — введите код вручную");
-  });
+      }).catch(function(){
+        toast("Ошибка сканирования. Введите код вручную.");
+      });
+    };
+    img.src = URL.createObjectURL(file);
+  } else {
+    toast("Сканер не поддерживается. Введите код вручную.");
+  }
+});
+
+document.getElementById("scanX").addEventListener("click", stopScan);
+
+function startScan(){ showManualBarcodeInput(); }
+
+function stopScan(){
+  if(typeof Quagga!=="undefined"){try{Quagga.stop();}catch(e){}}
+  if(scanStream){
+    if(scanStream._stopScan)scanStream._stopScan();
+    scanStream.getTracks().forEach(function(t){t.stop();});
+    scanStream=null;
+  }
+  var vid=document.getElementById("scanVid");
+  if(vid) vid.srcObject=null;
+  var area=document.getElementById("scanArea");
+  if(area) area.classList.remove("on");
 }
 
 function showManualBarcodeInput(){
@@ -941,7 +894,7 @@ function showManualBarcodeInput(){
   var box=document.createElement("div");
   box.id="bcBox";
   box.style.cssText="background:#f0fdf4;border:1.5px solid #86efac;border-radius:13px;padding:13px;margin-bottom:10px";
-  box.innerHTML='<div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:8px">📷 Введите штрих-код с упаковки:</div>'+
+  box.innerHTML='<div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:8px">Или введите штрих-код вручную:</div>'+
     '<div style="display:flex;gap:8px">'+
     '<input id="bcManual" type="number" placeholder="Напр. 4000417025005" style="flex:1;background:#fff;border:1.5px solid #86efac;border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit;font-weight:700;color:#1a1a2e;outline:none;min-width:0;-webkit-appearance:none"/>'+
     '<button id="bcGo" style="padding:10px 14px;background:#16a34a;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;flex-shrink:0">Найти</button>'+
@@ -956,7 +909,6 @@ function showManualBarcodeInput(){
   document.getElementById("bcManual").addEventListener("keydown",function(e){
     if(e.key==="Enter"||e.keyCode===13){var v=this.value.trim();if(v)fetchCode(v);}
   });
-  setTimeout(function(){document.getElementById("bcManual").focus();},300);
 }
 
 
