@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>NutriTrack</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 <style>
 html { box-sizing: border-box; }
 *, *:before, *:after { box-sizing: inherit; }
@@ -327,6 +328,10 @@ body {
 .shimpi { width: 100%; background: #F2F4F8; border: 1.5px solid #e5e7eb; border-radius: 11px; padding: 12px; font-size: 17px; font-family: inherit; font-weight: 700; color: #1a1a2e; outline: none; text-align: center; letter-spacing: 3px; -webkit-appearance: none; margin-bottom: 10px; display: block; }
 .shimpb { width: 100%; padding: 13px; background: #2563eb; border: none; border-radius: 12px; color: #fff; font-size: 15px; font-weight: 800; font-family: inherit; cursor: pointer; }
 
+/* ── EDIT GRAM QUICK ── */
+.egq { padding:8px 14px; border-radius:10px; background:#F2F4F8; border:1.5px solid #e5e7eb; font-size:14px; font-weight:700; color:#6b7280; cursor:pointer; font-family:inherit; }
+.egq:active { background:#fff5f2; border-color:#ff5c2c; color:#ff5c2c; }
+
 /* ── PROGRESS ── */
 .pb-w { height: 7px; background: #e5e7eb; border-radius: 4px; margin: 8px 0; overflow: hidden; }
 .pb-f { height: 100%; background: linear-gradient(90deg,#ff5c2c,#ff8c5a); border-radius: 4px; }
@@ -571,6 +576,29 @@ body {
   </div>
 </div>
 
+<!-- EDIT GRAMS OVERLAY -->
+<div class="ov" id="ovEdit">
+  <div class="sheet" style="max-height:50vh">
+    <div class="drag"></div>
+    <div class="sht">✏️ Изменить граммы</div>
+    <div id="editFoodName" style="font-size:14px;font-weight:700;color:#6b7280;margin-bottom:14px"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <input id="editGramsInp" type="number" min="1" max="9999"
+        style="flex:1;background:#F2F4F8;border:1.5px solid #e5e7eb;border-radius:11px;padding:12px;font-size:24px;font-weight:900;font-family:inherit;color:#1a1a2e;outline:none;text-align:center;-webkit-appearance:none"/>
+      <span style="font-size:15px;color:#9ca3af;font-weight:700">г</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px">
+      <button class="egq" data-g="50">50г</button>
+      <button class="egq" data-g="100">100г</button>
+      <button class="egq" data-g="150">150г</button>
+      <button class="egq" data-g="200">200г</button>
+      <button class="egq" data-g="250">250г</button>
+      <button class="egq" data-g="300">300г</button>
+    </div>
+    <button id="editGramsSave" style="width:100%;padding:14px;background:#ff5c2c;border:none;border-radius:13px;color:#fff;font-size:16px;font-weight:900;cursor:pointer;font-family:inherit">Сохранить</button>
+  </div>
+</div>
+
 <script>
 // ═══════ DB ═══════
 var DB=[
@@ -698,7 +726,7 @@ function renderMeals(){
     var mk=0;items.forEach(function(it){mk+=Math.round((it.k||0)*it.g/100);});
     if(items.length)any=true;
     var open=openM[mkey];var ih="";
-    if(open&&items.length){items.forEach(function(it,i){var r=it.g/100;var ik=Math.round((it.k||0)*r),ip=Math.round((it.p||0)*r*10)/10,ic=Math.round((it.c||0)*r*10)/10,iF=Math.round((it.f||0)*r*10)/10;ih+='<div class="fi" style="'+(i===items.length-1?'border-bottom:none':'')+'"><div class="fdot"></div><div style="flex:1;min-width:0"><div class="fnm">'+it.name+'</div><div class="fme">'+it.g+'г · Б'+ip+' У'+ic+' Ж'+iF+'</div></div><div style="display:flex;align-items:center;gap:5px;flex-shrink:0"><div class="fk">'+ik+' ккал</div><button class="fedit" data-m="'+mkey+'" data-i="'+i+'" title="Изменить граммы" style="width:26px;height:26px;border-radius:8px;background:#eff6ff;border:none;color:#2563eb;font-size:12px;cursor:pointer">✏️</button><button class="fdel" data-m="'+mkey+'" data-i="'+i+'">✕</button></div></div>';});}
+    if(open&&items.length){items.forEach(function(it,i){var r=it.g/100;var ik=Math.round((it.k||0)*r),ip=Math.round((it.p||0)*r*10)/10,ic=Math.round((it.c||0)*r*10)/10,iF=Math.round((it.f||0)*r*10)/10;ih+='<div class="fi fedit" data-m="'+mkey+'" data-i="'+i+'" style="'+(i===items.length-1?'border-bottom:none':'')+';cursor:pointer"><div class="fdot"></div><div style="flex:1;min-width:0"><div class="fnm">'+it.name+'</div><div class="fme">'+it.g+'г · Б'+ip+' У'+ic+' Ж'+iF+' <span style="color:#2563eb;font-size:10px">· нажми чтобы изменить</span></div></div><div style="display:flex;align-items:center;gap:5px;flex-shrink:0"><div class="fk">'+ik+' ккал</div><button class="fdel" data-m="'+mkey+'" data-i="'+i+'">✕</button></div></div>';});}
     var el=document.createElement("div");el.className="meal-card";
     el.innerHTML='<div class="mh" data-m="'+mkey+'"><div class="mico" style="background:'+cfg.c+'22">'+cfg.e+'</div><div><div class="mt">'+cfg.n+'</div><div class="ms">'+items.length+' продукт'+pl(items.length)+'</div></div><div class="mr">'+(mk>0?'<div class="mk">'+mk+' ккал</div>':'')+'<div class="chv'+(open?' o':'')+'">›</div></div></div>'+(open&&items.length?'<div class="mi-wrap">'+ih+'</div>':'')+'<button class="madd" data-m="'+mkey+'">＋ Добавить продукт</button>';
     w.appendChild(el);
@@ -707,7 +735,87 @@ function renderMeals(){
   w.querySelectorAll(".mh").forEach(function(el){el.addEventListener("click",function(){openM[el.dataset.m]=!openM[el.dataset.m];renderMeals();});});
   w.querySelectorAll(".madd").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();openAdd(b.dataset.m);});});
   w.querySelectorAll(".fdel").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();dayLog()[b.dataset.m].splice(parseInt(b.dataset.i),1);sLog();render();toast("Удалено");});});
-  w.querySelectorAll(".fedit").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();var meal=b.dataset.m;var idx=parseInt(b.dataset.i);var item=dayLog()[meal][idx];var newG=prompt("Граммы для «"+item.name+"»:",item.g);if(newG&&!isNaN(newG)&&parseFloat(newG)>0){dayLog()[meal][idx].g=parseFloat(newG);sLog();render();toast("✓ Обновлено");}});});
+  w.querySelectorAll(".fedit").forEach(function(el){el.addEventListener("click",function(e){if(e.target.classList.contains("fdel"))return;openEditGrams(el.dataset.m,parseInt(el.dataset.i));});});
+}
+
+// ═══════ EDIT GRAMS ═══════
+var editMeal=null,editItemIdx=null;
+
+function openEditGrams(meal,idx){
+  editMeal=meal;editItemIdx=idx;
+  var item=dayLog()[meal][idx];
+  document.getElementById("editFoodName").textContent=item.name;
+  document.getElementById("editGramsInp").value=item.g;
+  openOv("ovEdit");
+  setTimeout(function(){document.getElementById("editGramsInp").focus();document.getElementById("editGramsInp").select();},300);
+}
+
+document.querySelectorAll(".egq").forEach(function(b){
+  b.addEventListener("click",function(){
+    document.getElementById("editGramsInp").value=b.dataset.g;
+  });
+});
+
+document.getElementById("editGramsSave").addEventListener("click",function(){
+  var g=parseFloat(document.getElementById("editGramsInp").value)||0;
+  if(g<=0){toast("Введите граммы");return;}
+  dayLog()[editMeal][editItemIdx].g=g;
+  sLog();closeOv("ovEdit");render();toast("✓ Обновлено");
+});
+
+// ═══════ RECENT PRODUCTS ═══════
+function getRecent(){
+  var seen={};var recent=[];
+  var allDays=Object.keys(LOG).sort().reverse();
+  for(var d=0;d<allDays.length&&recent.length<8;d++){
+    var day=LOG[allDays[d]];
+    var meals=["snack","dinner","lunch","breakfast"];
+    for(var m=0;m<meals.length&&recent.length<8;m++){
+      var items=(day[meals[m]]||[]).slice().reverse();
+      for(var i=0;i<items.length&&recent.length<8;i++){
+        var key=items[i].name.toLowerCase();
+        if(!seen[key]){seen[key]=true;recent.push(items[i]);}
+      }
+    }
+  }
+  return recent;
+}
+
+function renderRecent(){
+  var recent=getRecent();
+  var block=document.getElementById("qBlock");
+  if(!recent.length){
+    // Show default quick chips if no history
+    block.innerHTML=
+      '<div class="ql">🇷🇸 Srpski</div><div class="qw" id="qSr"></div>'+
+      '<div class="ql">🇷🇺 Русское</div><div class="qw" id="qRu"></div>'+
+      '<div class="ql">🇬🇧 English</div><div class="qw" id="qEn"></div>';
+    buildQuick();
+    return;
+  }
+  block.innerHTML='<div class="ql">🕐 Недавние продукты</div><div id="recentList" style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px"></div>'+
+    '<div class="ql" style="margin-top:4px">🔍 Или поищите выше</div>';
+  var list=document.getElementById("recentList");
+  recent.forEach(function(food){
+    var d=document.createElement("div");
+    d.style.cssText="background:#F2F4F8;border:1.5px solid #e5e7eb;border-radius:12px;padding:10px 12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px";
+    d.innerHTML=
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+food.name+'</div>'+
+        '<div style="font-size:11px;color:#9ca3af;font-weight:600;margin-top:2px">Б'+food.p+'г У'+food.c+'г Ж'+food.f+'г</div>'+
+      '</div>'+
+      '<div style="font-size:14px;font-weight:900;color:#ff5c2c;flex-shrink:0">'+food.k+' ккал</div>';
+    d.addEventListener("click",function(){
+      selFood={n:food.name,k:food.k,p:food.p,c:food.c,f:food.f};
+      document.getElementById("gpName").textContent=food.name;
+      document.getElementById("gInp").value=food.g||100;
+      document.getElementById("gpanel").classList.add("on");
+      document.getElementById("qBlock").style.display="none";
+      updPrev();
+      setTimeout(function(){document.getElementById("gpanel").scrollIntoView({behavior:"smooth",block:"nearest"});},100);
+    });
+    list.appendChild(d);
+  });
 }
 
 // ═══════ TABS ═══════
@@ -737,46 +845,94 @@ document.getElementById("scanBtn").addEventListener("click",startScan);
 document.getElementById("scanX").addEventListener("click",stopScan);
 
 function startScan(){
-  // Always show manual input box first
   showManualBarcodeInput();
 
-  // Then also try camera if available
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){return;}
-  if(!window.BarcodeDetector){return;}
 
   var area=document.getElementById("scanArea");
   var vid=document.getElementById("scanVid");
   area.classList.add("on");
 
-  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false})
-    .then(function(stream){
-      scanStream=stream;
-      vid.srcObject=stream;
-      vid.play();
+  navigator.mediaDevices.getUserMedia({
+    video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},
+    audio:false
+  })
+  .then(function(stream){
+    scanStream=stream;
+    vid.srcObject=stream;
+    vid.play();
+    scanWithQuagga(vid);
+  })
+  .catch(function(err){
+    area.classList.remove("on");
+    toast("Нет доступа к камере: "+err.message);
+  });
+}
 
-      var bd=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]});
-      var scanning=true;
-      scanStream._stop=function(){scanning=false;};
-
-      function tick(){
-        if(!scanning)return;
-        bd.detect(vid).then(function(codes){
-          if(codes&&codes.length>0){
-            scanning=false;
-            stopScan();
-            // fill manual input and search
-            document.getElementById("bcManual").value=codes[0].rawValue;
-            fetchCode(codes[0].rawValue);
-          } else {
-            requestAnimationFrame(tick);
-          }
-        }).catch(function(){if(scanning)requestAnimationFrame(tick);});
+function scanWithQuagga(vid){
+  // Use Quagga if loaded
+  if(typeof Quagga!=="undefined"){
+    Quagga.init({
+      inputStream:{
+        type:"LiveStream",
+        target:vid,
+        constraints:{facingMode:"environment"}
+      },
+      decoder:{
+        readers:["ean_reader","ean_8_reader","upc_reader","upc_e_reader","code_128_reader"]
+      },
+      locate:true,
+      numOfWorkers:0,
+      frequency:10
+    },function(err){
+      if(err){
+        toast("Quagga error: "+err);
+        tryNativeDetector(vid);
+        return;
       }
-      requestAnimationFrame(tick);
-    })
-    .catch(function(){
-      document.getElementById("scanArea").classList.remove("on");
+      Quagga.start();
+      Quagga.onDetected(function(result){
+        var code=result.codeResult.code;
+        if(code){
+          Quagga.stop();
+          stopScan();
+          fetchCode(code);
+        }
+      });
     });
+    return;
+  }
+  // Fallback: native BarcodeDetector
+  tryNativeDetector(vid);
+}
+
+function tryNativeDetector(vid){
+  if(!window.BarcodeDetector){
+    toast("Сканер недоступен — введите код вручную");
+    return;
+  }
+  BarcodeDetector.getSupportedFormats().then(function(formats){
+    var bd=new BarcodeDetector({formats:formats});
+    var scanning=true;
+    if(scanStream)scanStream._stopScan=function(){scanning=false;};
+
+    function tick(){
+      if(!scanning||!vid.srcObject)return;
+      bd.detect(vid).then(function(codes){
+        if(codes&&codes.length>0){
+          scanning=false;
+          var code=codes[0].rawValue;
+          stopScan();
+          fetchCode(code);
+        } else {
+          setTimeout(tick,300);
+        }
+      }).catch(function(){if(scanning)setTimeout(tick,500);});
+    }
+    setTimeout(tick,500); // give video time to start
+  }).catch(function(){
+    toast("Сканер недоступен — введите код вручную");
+  });
 }
 
 function showManualBarcodeInput(){
@@ -790,7 +946,6 @@ function showManualBarcodeInput(){
     '<input id="bcManual" type="number" placeholder="Напр. 4000417025005" style="flex:1;background:#fff;border:1.5px solid #86efac;border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit;font-weight:700;color:#1a1a2e;outline:none;min-width:0;-webkit-appearance:none"/>'+
     '<button id="bcGo" style="padding:10px 14px;background:#16a34a;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;flex-shrink:0">Найти</button>'+
     '</div>';
-  // insert before search box
   var sbox=document.querySelector(".sbox");
   sbox.parentNode.insertBefore(box,sbox);
   document.getElementById("bcGo").addEventListener("click",function(){
@@ -806,15 +961,16 @@ function showManualBarcodeInput(){
 
 
 function stopScan(){
+  if(typeof Quagga!=="undefined"){try{Quagga.stop();}catch(e){}}
   if(scanStream){
-    if(scanStream._stop)scanStream._stop();
+    if(scanStream._stopScan)scanStream._stopScan();
     scanStream.getTracks().forEach(function(t){t.stop();});
     scanStream=null;
   }
   var vid=document.getElementById("scanVid");
   vid.srcObject=null;
   document.getElementById("scanArea").classList.remove("on");
-  document.getElementById("scanBtn").innerHTML="📷 Сканировать штрих-код";
+  document.getElementById("scanBtn").innerHTML="📷 Штрих-код / Сканировать";
 }
 
 function fetchCode(code){
@@ -873,6 +1029,7 @@ function openAdd(meal){
   var bc=document.getElementById("bcBox");if(bc)bc.style.display="none";
   var bcM=document.getElementById("bcManual");if(bcM)bcM.value="";
   document.querySelectorAll(".mtab").forEach(function(b){b.classList.toggle("on",b.dataset.m===selMeal);});
+  renderRecent();
   openOv("ovA");
   setTimeout(function(){document.getElementById("sInp").focus();},300);
 }
