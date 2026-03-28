@@ -635,7 +635,7 @@ var QEN=["chicken breast","oatmeal","salmon","egg","avocado","tuna","almonds","b
 // ═══════ STATE ═══════
 var curDate=new Date(),curTab=0,selMeal="breakfast",selFood=null;
 var openM={breakfast:true,lunch:true,dinner:true,snack:true};
-var editIdx=null,sTimer=null,scanStream=null,codeReader=null;
+var editIdx=null,sTimer=null,scanStream=null;
 var GOALS=JSON.parse(localStorage.getItem("ntg")||"null")||{cal:2000,prot:120,carb:250,fat:65,pPct:30,cPct:50,fPct:20};
 var LOG=JSON.parse(localStorage.getItem("ntl")||"{}");
 var RECS=JSON.parse(localStorage.getItem("ntr")||"[]");
@@ -724,7 +724,6 @@ function startScan(){
   var area=document.getElementById("scanArea");
   var vid=document.getElementById("scanVid");
 
-  // Check camera support
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
     var c=prompt("Камера недоступна.\nВведите штрих-код:");
     if(c)fetchCode(c.trim());
@@ -738,31 +737,37 @@ function startScan(){
     .then(function(stream){
       scanStream=stream;
       vid.srcObject=stream;
+      vid.play();
 
-      // Try ZXing if loaded
-      if(typeof ZXing!=="undefined"){
-        try{
-          codeReader=new ZXing.BrowserMultiFormatReader();
-          codeReader.decodeFromVideoElement(vid,function(result,err){
-            if(result){
-              stopScan();
-              fetchCode(result.getText());
-            }
-          });
-        }catch(e){
-          // ZXing failed, try BarcodeDetector
-          tryBarcodeDetector(vid);
-        }
-      } else if(window.BarcodeDetector){
-        tryBarcodeDetector(vid);
-      } else {
-        // Manual fallback
+      if(!window.BarcodeDetector){
         stopScan();
-        var c=prompt("Сканер недоступен.\nВведите штрих-код вручную:");
+        var c=prompt("Введите штрих-код вручную:");
         if(c)fetchCode(c.trim());
+        return;
       }
+
+      var bd=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]});
+      var scanning=true;
+
+      function tick(){
+        if(!scanning)return;
+        bd.detect(vid).then(function(codes){
+          if(codes&&codes.length>0){
+            scanning=false;
+            stopScan();
+            fetchCode(codes[0].rawValue);
+          } else {
+            requestAnimationFrame(tick);
+          }
+        }).catch(function(){
+          if(scanning)requestAnimationFrame(tick);
+        });
+      }
+      // store cleanup ref
+      scanStream._stop=function(){scanning=false;};
+      requestAnimationFrame(tick);
     })
-    .catch(function(err){
+    .catch(function(){
       area.classList.remove("on");
       document.getElementById("scanBtn").innerHTML="📷 Сканировать штрих-код";
       var c=prompt("Нет доступа к камере.\nВведите штрих-код вручную:");
@@ -770,26 +775,10 @@ function startScan(){
     });
 }
 
-function tryBarcodeDetector(vid){
-  if(!window.BarcodeDetector){stopScan();return;}
-  var bd=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]});
-  var interval=setInterval(function(){
-    bd.detect(vid).then(function(codes){
-      if(codes&&codes.length>0){
-        clearInterval(interval);
-        stopScan();
-        fetchCode(codes[0].rawValue);
-      }
-    }).catch(function(){});
-  },500);
-  // store interval to clear on stopScan
-  scanStream._bdInterval=interval;
-}
 
 function stopScan(){
-  if(codeReader){try{codeReader.reset();}catch(e){}codeReader=null;}
   if(scanStream){
-    if(scanStream._bdInterval)clearInterval(scanStream._bdInterval);
+    if(scanStream._stop)scanStream._stop();
     scanStream.getTracks().forEach(function(t){t.stop();});
     scanStream=null;
   }
