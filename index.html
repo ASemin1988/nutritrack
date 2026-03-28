@@ -363,6 +363,16 @@ body {
     </div>
     <button class="dnav" id="bNext">›</button>
   </div>
+  <!-- CALORIE COUNTER BAR -->
+  <div style="margin-top:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+      <span style="font-size:12px;font-weight:700;color:#6b7280">Съедено сегодня</span>
+      <span style="font-size:13px;font-weight:900;color:#ff5c2c"><span id="hdrKcal">0</span> / <span id="hdrGoal">2000</span> ккал</span>
+    </div>
+    <div style="height:6px;background:#f3f4f6;border-radius:3px;overflow:hidden">
+      <div id="hdrBar" style="height:100%;background:linear-gradient(90deg,#ff5c2c,#ff8c5a);border-radius:3px;width:0%;transition:width .5s"></div>
+    </div>
+  </div>
 </div>
 
 <!-- DIARY -->
@@ -433,7 +443,7 @@ body {
     </div>
 
     <!-- SCANNER -->
-    <button class="scan-btn" id="scanBtn">📷 Сканировать штрих-код</button>
+    <button class="scan-btn" id="scanBtn">📷 Штрих-код / Сканировать</button>
     <div class="scan-area" id="scanArea">
       <video id="scanVid" playsinline muted autoplay></video>
       <div class="scan-ui">
@@ -670,6 +680,11 @@ function render(){
   document.getElementById("bP").style.width=Math.min(T.p/GOALS.prot*100,100)+"%";
   document.getElementById("bC").style.width=Math.min(T.c/GOALS.carb*100,100)+"%";
   document.getElementById("bF").style.width=Math.min(T.f/GOALS.fat*100,100)+"%";
+  // Header calorie bar
+  document.getElementById("hdrKcal").textContent=T.k;
+  document.getElementById("hdrGoal").textContent=GOALS.cal;
+  document.getElementById("hdrBar").style.width=Math.min(T.k/GOALS.cal*100,100)+"%";
+  document.getElementById("hdrBar").style.background=T.k>GOALS.cal?"#ef4444":"linear-gradient(90deg,#ff5c2c,#ff8c5a)";
   renderMeals();
   if(curTab===1)renderRec();
   if(curTab===2)renderProg();
@@ -683,7 +698,7 @@ function renderMeals(){
     var mk=0;items.forEach(function(it){mk+=Math.round((it.k||0)*it.g/100);});
     if(items.length)any=true;
     var open=openM[mkey];var ih="";
-    if(open&&items.length){items.forEach(function(it,i){var r=it.g/100;var ik=Math.round((it.k||0)*r),ip=Math.round((it.p||0)*r*10)/10,ic=Math.round((it.c||0)*r*10)/10,iF=Math.round((it.f||0)*r*10)/10;ih+='<div class="fi" style="'+(i===items.length-1?'border-bottom:none':'')+'"><div class="fdot"></div><div style="flex:1;min-width:0"><div class="fnm">'+it.name+'</div><div class="fme">'+it.g+'г · Б'+ip+' У'+ic+' Ж'+iF+'</div></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><div class="fk">'+ik+' ккал</div><button class="fdel" data-m="'+mkey+'" data-i="'+i+'">✕</button></div></div>';});}
+    if(open&&items.length){items.forEach(function(it,i){var r=it.g/100;var ik=Math.round((it.k||0)*r),ip=Math.round((it.p||0)*r*10)/10,ic=Math.round((it.c||0)*r*10)/10,iF=Math.round((it.f||0)*r*10)/10;ih+='<div class="fi" style="'+(i===items.length-1?'border-bottom:none':'')+'"><div class="fdot"></div><div style="flex:1;min-width:0"><div class="fnm">'+it.name+'</div><div class="fme">'+it.g+'г · Б'+ip+' У'+ic+' Ж'+iF+'</div></div><div style="display:flex;align-items:center;gap:5px;flex-shrink:0"><div class="fk">'+ik+' ккал</div><button class="fedit" data-m="'+mkey+'" data-i="'+i+'" title="Изменить граммы" style="width:26px;height:26px;border-radius:8px;background:#eff6ff;border:none;color:#2563eb;font-size:12px;cursor:pointer">✏️</button><button class="fdel" data-m="'+mkey+'" data-i="'+i+'">✕</button></div></div>';});}
     var el=document.createElement("div");el.className="meal-card";
     el.innerHTML='<div class="mh" data-m="'+mkey+'"><div class="mico" style="background:'+cfg.c+'22">'+cfg.e+'</div><div><div class="mt">'+cfg.n+'</div><div class="ms">'+items.length+' продукт'+pl(items.length)+'</div></div><div class="mr">'+(mk>0?'<div class="mk">'+mk+' ккал</div>':'')+'<div class="chv'+(open?' o':'')+'">›</div></div></div>'+(open&&items.length?'<div class="mi-wrap">'+ih+'</div>':'')+'<button class="madd" data-m="'+mkey+'">＋ Добавить продукт</button>';
     w.appendChild(el);
@@ -692,6 +707,7 @@ function renderMeals(){
   w.querySelectorAll(".mh").forEach(function(el){el.addEventListener("click",function(){openM[el.dataset.m]=!openM[el.dataset.m];renderMeals();});});
   w.querySelectorAll(".madd").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();openAdd(b.dataset.m);});});
   w.querySelectorAll(".fdel").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();dayLog()[b.dataset.m].splice(parseInt(b.dataset.i),1);sLog();render();toast("Удалено");});});
+  w.querySelectorAll(".fedit").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();var meal=b.dataset.m;var idx=parseInt(b.dataset.i);var item=dayLog()[meal][idx];var newG=prompt("Граммы для «"+item.name+"»:",item.g);if(newG&&!isNaN(newG)&&parseFloat(newG)>0){dayLog()[meal][idx].g=parseFloat(newG);sLog();render();toast("✓ Обновлено");}});});
 }
 
 // ═══════ TABS ═══════
@@ -721,17 +737,16 @@ document.getElementById("scanBtn").addEventListener("click",startScan);
 document.getElementById("scanX").addEventListener("click",stopScan);
 
 function startScan(){
+  // Always show manual input box first
+  showManualBarcodeInput();
+
+  // Then also try camera if available
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){return;}
+  if(!window.BarcodeDetector){return;}
+
   var area=document.getElementById("scanArea");
   var vid=document.getElementById("scanVid");
-
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    var c=prompt("Камера недоступна.\nВведите штрих-код:");
-    if(c)fetchCode(c.trim());
-    return;
-  }
-
   area.classList.add("on");
-  document.getElementById("scanBtn").innerHTML="⏹️ Остановить сканер";
 
   navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false})
     .then(function(stream){
@@ -739,15 +754,9 @@ function startScan(){
       vid.srcObject=stream;
       vid.play();
 
-      if(!window.BarcodeDetector){
-        stopScan();
-        var c=prompt("Введите штрих-код вручную:");
-        if(c)fetchCode(c.trim());
-        return;
-      }
-
       var bd=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]});
       var scanning=true;
+      scanStream._stop=function(){scanning=false;};
 
       function tick(){
         if(!scanning)return;
@@ -755,24 +764,44 @@ function startScan(){
           if(codes&&codes.length>0){
             scanning=false;
             stopScan();
+            // fill manual input and search
+            document.getElementById("bcManual").value=codes[0].rawValue;
             fetchCode(codes[0].rawValue);
           } else {
             requestAnimationFrame(tick);
           }
-        }).catch(function(){
-          if(scanning)requestAnimationFrame(tick);
-        });
+        }).catch(function(){if(scanning)requestAnimationFrame(tick);});
       }
-      // store cleanup ref
-      scanStream._stop=function(){scanning=false;};
       requestAnimationFrame(tick);
     })
     .catch(function(){
-      area.classList.remove("on");
-      document.getElementById("scanBtn").innerHTML="📷 Сканировать штрих-код";
-      var c=prompt("Нет доступа к камере.\nВведите штрих-код вручную:");
-      if(c)fetchCode(c.trim());
+      document.getElementById("scanArea").classList.remove("on");
     });
+}
+
+function showManualBarcodeInput(){
+  var existing=document.getElementById("bcBox");
+  if(existing){existing.style.display="block";document.getElementById("bcManual").focus();return;}
+  var box=document.createElement("div");
+  box.id="bcBox";
+  box.style.cssText="background:#f0fdf4;border:1.5px solid #86efac;border-radius:13px;padding:13px;margin-bottom:10px";
+  box.innerHTML='<div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:8px">📷 Введите штрих-код с упаковки:</div>'+
+    '<div style="display:flex;gap:8px">'+
+    '<input id="bcManual" type="number" placeholder="Напр. 4000417025005" style="flex:1;background:#fff;border:1.5px solid #86efac;border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit;font-weight:700;color:#1a1a2e;outline:none;min-width:0;-webkit-appearance:none"/>'+
+    '<button id="bcGo" style="padding:10px 14px;background:#16a34a;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;flex-shrink:0">Найти</button>'+
+    '</div>';
+  // insert before search box
+  var sbox=document.querySelector(".sbox");
+  sbox.parentNode.insertBefore(box,sbox);
+  document.getElementById("bcGo").addEventListener("click",function(){
+    var v=document.getElementById("bcManual").value.trim();
+    if(v)fetchCode(v);
+    else toast("Введите штрих-код");
+  });
+  document.getElementById("bcManual").addEventListener("keydown",function(e){
+    if(e.key==="Enter"||e.keyCode===13){var v=this.value.trim();if(v)fetchCode(v);}
+  });
+  setTimeout(function(){document.getElementById("bcManual").focus();},300);
 }
 
 
@@ -800,12 +829,29 @@ function fetchCode(code){
     .then(function(data){
       document.getElementById("spin").style.display="none";
       if(data.status===1&&data.product){
-        var p=data.product;var n=p.nutriments||{};
+        var p=data.product;
+        var n=p.nutriments||{};
         var nm=p.product_name_ru||p.product_name_rs||p.product_name_sr||p.product_name_en||p.product_name||"Продукт";
-        var food={n:nm,b:p.brands||"🌍",k:Math.round(n["energy-kcal_100g"]||n["energy-kcal"]||(n["energy_100g"]||0)/4.184||0),p:Math.round((n.proteins_100g||0)*10)/10,c:Math.round((n.carbohydrates_100g||0)*10)/10,f:Math.round((n.fat_100g||0)*10)/10,src:"off"};
+        var k=Math.round(n["energy-kcal_100g"]||n["energy-kcal"]||(n["energy_100g"]||0)/4.184||0);
+        var pr=Math.round((n.proteins_100g||n["proteins_100g"]||0)*10)/10;
+        var cb=Math.round((n.carbohydrates_100g||n["carbohydrates_100g"]||0)*10)/10;
+        var ft=Math.round((n.fat_100g||n["fat_100g"]||0)*10)/10;
+        var food={n:nm,b:p.brands||"🌍",k:k,p:pr,c:cb,f:ft,src:"off"};
+        // Set selFood directly
+        selFood=food;
         renderRes([food]);
-        setTimeout(function(){var c=document.querySelector(".rc");if(c)c.click();},150);
-        toast("✓ "+nm);
+        // Open gram panel directly
+        document.getElementById("gpName").textContent=food.n;
+        document.getElementById("gInp").value=100;
+        document.getElementById("gpanel").classList.add("on");
+        updPrev();
+        // Mark card as selected
+        setTimeout(function(){
+          var c=document.querySelector(".rc");
+          if(c)c.classList.add("sel");
+          document.getElementById("gpanel").scrollIntoView({behavior:"smooth",block:"nearest"});
+        },100);
+        toast("✓ "+nm+(k===0?" (нет данных КБЖУ)":""));
       }else{
         document.getElementById("emsg").style.display="block";
         toast("❌ Продукт не найден в базе");
@@ -824,6 +870,8 @@ function openAdd(meal){
   document.getElementById("spin").style.display="none";
   document.getElementById("emsg").style.display="none";
   document.getElementById("qBlock").style.display="block";
+  var bc=document.getElementById("bcBox");if(bc)bc.style.display="none";
+  var bcM=document.getElementById("bcManual");if(bcM)bcM.value="";
   document.querySelectorAll(".mtab").forEach(function(b){b.classList.toggle("on",b.dataset.m===selMeal);});
   openOv("ovA");
   setTimeout(function(){document.getElementById("sInp").focus();},300);
