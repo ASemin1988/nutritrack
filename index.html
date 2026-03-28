@@ -447,20 +447,18 @@ body {
     </div>
 
     <!-- SCANNER -->
-    <div style="margin-bottom:10px">
-      <label for="cameraInput" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#dcfce7;border:1.5px solid #86efac;border-radius:13px;color:#16a34a;font-size:15px;font-weight:800;cursor:pointer">
-        📷 Открыть камеру для сканирования
-      </label>
-      <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"/>
-    </div>
-    <div id="scanArea" class="scan-area">
-      <video id="scanVid" playsinline muted autoplay></video>
-      <div class="scan-ui">
-        <div class="scan-box"></div>
-        <div class="scan-line"></div>
+    <button id="scanBtn" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#dcfce7;border:1.5px solid #86efac;border-radius:13px;color:#16a34a;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px">
+      📷 Сканировать штрих-код
+    </button>
+    <div id="scanArea" style="display:none;margin-bottom:10px;border-radius:13px;overflow:hidden;position:relative;background:#000;width:100%">
+      <video id="scanVid" playsinline muted autoplay style="width:100%;display:block;max-height:280px;object-fit:cover"></video>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+        <div style="width:220px;height:110px;border:3px solid #22c55e;border-radius:12px;box-shadow:0 0 0 2000px rgba(0,0,0,0.4)"></div>
       </div>
-      <div class="scan-txt">Наведите камеру на штрих-код</div>
-      <button class="scan-x" id="scanX">✕</button>
+      <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);color:#fff;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap">
+        Наведите на штрих-код
+      </div>
+      <button id="scanX" style="position:absolute;top:10px;right:10px;width:34px;height:34px;background:rgba(0,0,0,.65);border:none;color:#fff;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit">✕</button>
     </div>
 
     <!-- SEARCH -->
@@ -677,7 +675,7 @@ var QEN=["chicken breast","oatmeal","salmon","egg","avocado","tuna","almonds","b
 // ═══════ STATE ═══════
 var curDate=new Date(),curTab=0,selMeal="breakfast",selFood=null;
 var openM={breakfast:true,lunch:true,dinner:true,snack:true};
-var editIdx=null,sTimer=null,scanStream=null;
+var editIdx=null,sTimer=null;
 var GOALS=JSON.parse(localStorage.getItem("ntg")||"null")||{cal:2000,prot:120,carb:250,fat:65,pPct:30,cPct:50,fPct:20};
 var LOG=JSON.parse(localStorage.getItem("ntl")||"{}");
 var RECS=JSON.parse(localStorage.getItem("ntr")||"[]");
@@ -788,17 +786,35 @@ function getRecent(){
 function renderRecent(){
   var recent=getRecent();
   var block=document.getElementById("qBlock");
+  var CHIPS={qSr:["pileća prsa","kajmak","burek","plazma","ajvar","sarma","ćevapi","gibanica"],qRu:["куриная грудка","овсянка","гречка","творог","яйцо","лосось","борщ","банан"],qEn:["chicken breast","oatmeal","salmon","egg","avocado","tuna","almonds","broccoli"]};
+
+  function makeChip(q){
+    var b=document.createElement("button");b.className="qc";b.textContent=q;
+    b.addEventListener("click",function(){
+      document.getElementById("sInp").value=q;
+      document.getElementById("qBlock").style.display="none";
+      document.getElementById("spin").style.display="block";
+      document.getElementById("res").innerHTML="";
+      document.getElementById("gpanel").classList.remove("on");
+      selFood=null;clearTimeout(sTimer);
+      sTimer=setTimeout(function(){doSearch(q);},300);
+    });
+    return b;
+  }
+
   if(!recent.length){
-    // Show default quick chips if no history
     block.innerHTML=
       '<div class="ql">🇷🇸 Srpski</div><div class="qw" id="qSr"></div>'+
       '<div class="ql">🇷🇺 Русское</div><div class="qw" id="qRu"></div>'+
       '<div class="ql">🇬🇧 English</div><div class="qw" id="qEn"></div>';
-    buildQuick();
+    Object.keys(CHIPS).forEach(function(id){
+      var w=document.getElementById(id);
+      CHIPS[id].forEach(function(q){w.appendChild(makeChip(q));});
+    });
     return;
   }
-  block.innerHTML='<div class="ql">🕐 Недавние продукты</div><div id="recentList" style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px"></div>'+
-    '<div class="ql" style="margin-top:4px">🔍 Или поищите выше</div>';
+
+  block.innerHTML='<div class="ql">🕐 Недавние продукты</div><div id="recentList" style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px"></div>';
   var list=document.getElementById("recentList");
   recent.forEach(function(food){
     var d=document.createElement("div");
@@ -842,88 +858,125 @@ document.getElementById("bNext").addEventListener("click",function(){curDate.set
 // ═══════ OVERLAYS ═══════
 function openOv(id){document.getElementById(id).classList.add("on");}
 function closeOv(id){document.getElementById(id).classList.remove("on");}
-document.querySelectorAll(".ov").forEach(function(ov){ov.addEventListener("click",function(e){if(e.target===ov){stopScan();closeOv(ov.id);}});});
+document.querySelectorAll(".ov").forEach(function(ov){ov.addEventListener("click",function(e){if(e.target===ov){closeScanner();closeOv(ov.id);}});});
 
-// ═══════ BARCODE SCANNER via native camera ═══════
-document.getElementById("cameraInput").addEventListener("change", function(e){
-  var file = e.target.files && e.target.files[0];
-  if(!file) return;
-  // Reset input so same file can be picked again
-  e.target.value = "";
+// ═══════ BARCODE SCANNER ═══════
+var scanStream=null;
+var scanActive=false;
 
-  if(window.BarcodeDetector){
-    var img = new Image();
-    img.onload = function(){
-      var bd = new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]});
-      bd.detect(img).then(function(codes){
-        if(codes && codes.length > 0){
-          fetchCode(codes[0].rawValue);
-        } else {
-          toast("Штрих-код не найден на фото. Попробуйте ещё раз или введите вручную.");
-        }
-      }).catch(function(){
-        toast("Ошибка сканирования. Введите код вручную.");
-      });
-    };
-    img.src = URL.createObjectURL(file);
-  } else {
-    toast("Сканер не поддерживается. Введите код вручную.");
-  }
+document.getElementById("scanBtn").addEventListener("click", function(){
+  openScanner();
+});
+document.getElementById("scanX").addEventListener("click", function(){
+  closeScanner();
 });
 
-document.getElementById("scanX").addEventListener("click", stopScan);
-
-function startScan(){ showManualBarcodeInput(); }
-
-function stopScan(){
-  if(typeof Quagga!=="undefined"){try{Quagga.stop();}catch(e){}}
-  if(scanStream){
-    if(scanStream._stopScan)scanStream._stopScan();
-    scanStream.getTracks().forEach(function(t){t.stop();});
-    scanStream=null;
+function openScanner(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    showManualBarcodeInput();
+    toast("Камера недоступна — введите код вручную");
+    return;
   }
-  var vid=document.getElementById("scanVid");
-  if(vid) vid.srcObject=null;
-  var area=document.getElementById("scanArea");
-  if(area) area.classList.remove("on");
+
+  var area = document.getElementById("scanArea");
+  var vid  = document.getElementById("scanVid");
+  area.style.display = "block";
+  document.getElementById("scanBtn").textContent = "⏹ Остановить сканер";
+  scanActive = true;
+
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+    audio: false
+  })
+  .then(function(stream){
+    scanStream = stream;
+    vid.srcObject = stream;
+    vid.play().then(function(){
+      startDetecting(vid);
+    }).catch(function(){
+      startDetecting(vid);
+    });
+  })
+  .catch(function(err){
+    closeScanner();
+    showManualBarcodeInput();
+    toast("Нет доступа к камере: " + (err.message||err));
+  });
+}
+
+function startDetecting(vid){
+  if(!window.BarcodeDetector){
+    closeScanner();
+    showManualBarcodeInput();
+    toast("Введите штрих-код вручную");
+    return;
+  }
+
+  var bd = new BarcodeDetector({
+    formats: ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code","data_matrix"]
+  });
+
+  function detect(){
+    if(!scanActive) return;
+    if(!vid.readyState || vid.readyState < 2){
+      setTimeout(detect, 200);
+      return;
+    }
+    bd.detect(vid)
+      .then(function(codes){
+        if(!scanActive) return;
+        if(codes && codes.length > 0){
+          var code = codes[0].rawValue;
+          closeScanner();
+          fetchCode(code);
+        } else {
+          requestAnimationFrame(detect);
+        }
+      })
+      .catch(function(){
+        if(scanActive) setTimeout(detect, 300);
+      });
+  }
+
+  setTimeout(detect, 500);
+}
+
+function closeScanner(){
+  scanActive = false;
+  if(scanStream){
+    scanStream.getTracks().forEach(function(t){ t.stop(); });
+    scanStream = null;
+  }
+  var vid = document.getElementById("scanVid");
+  vid.srcObject = null;
+  document.getElementById("scanArea").style.display = "none";
+  document.getElementById("scanBtn").textContent = "📷 Сканировать штрих-код";
 }
 
 function showManualBarcodeInput(){
-  var existing=document.getElementById("bcBox");
-  if(existing){existing.style.display="block";document.getElementById("bcManual").focus();return;}
-  var box=document.createElement("div");
-  box.id="bcBox";
-  box.style.cssText="background:#f0fdf4;border:1.5px solid #86efac;border-radius:13px;padding:13px;margin-bottom:10px";
-  box.innerHTML='<div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:8px">Или введите штрих-код вручную:</div>'+
+  var existing = document.getElementById("bcBox");
+  if(existing){ existing.style.display = "block"; document.getElementById("bcManual").focus(); return; }
+  var box = document.createElement("div");
+  box.id = "bcBox";
+  box.style.cssText = "background:#f0fdf4;border:1.5px solid #86efac;border-radius:13px;padding:13px;margin-bottom:10px";
+  box.innerHTML =
+    '<div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:8px">Или введите штрих-код вручную:</div>'+
     '<div style="display:flex;gap:8px">'+
-    '<input id="bcManual" type="number" placeholder="Напр. 4000417025005" style="flex:1;background:#fff;border:1.5px solid #86efac;border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit;font-weight:700;color:#1a1a2e;outline:none;min-width:0;-webkit-appearance:none"/>'+
-    '<button id="bcGo" style="padding:10px 14px;background:#16a34a;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;flex-shrink:0">Найти</button>'+
+      '<input id="bcManual" type="number" placeholder="Напр. 4000417025005" style="flex:1;background:#fff;border:1.5px solid #86efac;border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit;font-weight:700;color:#1a1a2e;outline:none;min-width:0;-webkit-appearance:none"/>'+
+      '<button id="bcGo" style="padding:10px 14px;background:#16a34a;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;flex-shrink:0">Найти</button>'+
     '</div>';
-  var sbox=document.querySelector(".sbox");
-  sbox.parentNode.insertBefore(box,sbox);
-  document.getElementById("bcGo").addEventListener("click",function(){
-    var v=document.getElementById("bcManual").value.trim();
-    if(v)fetchCode(v);
-    else toast("Введите штрих-код");
+  var sbox = document.querySelector(".sbox");
+  sbox.parentNode.insertBefore(box, sbox);
+  document.getElementById("bcGo").addEventListener("click", function(){
+    var v = document.getElementById("bcManual").value.trim();
+    if(v) fetchCode(v); else toast("Введите штрих-код");
   });
-  document.getElementById("bcManual").addEventListener("keydown",function(e){
-    if(e.key==="Enter"||e.keyCode===13){var v=this.value.trim();if(v)fetchCode(v);}
+  document.getElementById("bcManual").addEventListener("keydown", function(e){
+    if(e.key==="Enter") { var v=this.value.trim(); if(v) fetchCode(v); }
   });
 }
 
 
-function stopScan(){
-  if(typeof Quagga!=="undefined"){try{Quagga.stop();}catch(e){}}
-  if(scanStream){
-    if(scanStream._stopScan)scanStream._stopScan();
-    scanStream.getTracks().forEach(function(t){t.stop();});
-    scanStream=null;
-  }
-  var vid=document.getElementById("scanVid");
-  vid.srcObject=null;
-  document.getElementById("scanArea").classList.remove("on");
-  document.getElementById("scanBtn").innerHTML="📷 Штрих-код / Сканировать";
-}
 
 function fetchCode(code){
   document.getElementById("qBlock").style.display="none";
@@ -971,7 +1024,7 @@ function fetchCode(code){
 // ═══════ ADD FOOD ═══════
 function openAdd(meal){
   selFood=null;selMeal=meal||"breakfast";
-  stopScan();
+  closeScanner();
   document.getElementById("sInp").value="";
   document.getElementById("res").innerHTML="";
   document.getElementById("gpanel").classList.remove("on");
@@ -1008,7 +1061,7 @@ document.getElementById("gAdd").addEventListener("click",function(){
   var g=parseFloat(document.getElementById("gInp").value)||0;
   if(g<=0){toast("Введите граммы");return;}
   var log=dayLog();log[selMeal].push({name:selFood.n,g:g,k:selFood.k,p:selFood.p,c:selFood.c,f:selFood.f});
-  sLog();openM[selMeal]=true;stopScan();closeOv("ovA");render();toast("✓ "+selFood.n+" добавлен");
+  sLog();openM[selMeal]=true;closeScanner();closeOv("ovA");render();toast("✓ "+selFood.n+" добавлен");
 });
 
 function localSrch(q){var ql=q.toLowerCase().replace(/[\s-]/g,"");return DB.filter(function(it){if(it.n.toLowerCase().replace(/[\s-]/g,"").indexOf(ql)>-1)return true;return it.t.some(function(tag){return tag.toLowerCase().replace(/[\s-]/g,"").indexOf(ql)>-1;});});}
