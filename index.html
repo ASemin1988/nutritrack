@@ -7,318 +7,302 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>NutriTrack</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 <style>
-:root {
-  --bg:#F4F6FB;
-  --white:#FFFFFF;
-  --border:#E8EBF4;
-  --border2:#D8DCF0;
-  --text:#181B2E;
-  --text2:#6B7280;
-  --text3:#A8B0C8;
-  --accent:#FF5C2C;
-  --accent2:#FF8C5A;
-  --accent-bg:#FFF2EE;
-  --green:#16A34A;
-  --green-bg:#DCFCE7;
-  --blue:#2563EB;
-  --blue-bg:#EFF6FF;
-  --red:#EF4444;
-  --red-bg:#FEF2F2;
-  --yellow:#D97706;
-  --yellow-bg:#FFFBEB;
-  --purple:#7C3AED;
-  --purple-bg:#F5F3FF;
-  --protein:#EF4444;
-  --carbs:#F59E0B;
-  --fat:#8B5CF6;
-  --r:18px;
-  --rs:12px;
+:root{
+  --bg:#F4F6FB;--white:#fff;--border:#E8EBF4;--border2:#D8DCF0;
+  --text:#181B2E;--text2:#6B7280;--text3:#A8B0C8;
+  --accent:#FF5C2C;--accent2:#FF8C5A;--accent-bg:#FFF2EE;
+  --green:#16A34A;--green-bg:#DCFCE7;
+  --blue:#2563EB;--blue-bg:#EFF6FF;
+  --red:#EF4444;--red-bg:#FEF2F2;
+  --yellow:#D97706;--yellow-bg:#FFFBEB;
+  --purple:#7C3AED;--purple-bg:#F5F3FF;
+  --protein:#EF4444;--carbs:#F59E0B;--fat:#8B5CF6;
+  --r:18px;--rs:12px;
   --sh:0 1px 12px rgba(24,27,46,.07);
   --sh2:0 4px 24px rgba(24,27,46,.12);
-  --sh3:0 8px 40px rgba(24,27,46,.18);
   --st:env(safe-area-inset-top,44px);
   --sb:env(safe-area-inset-bottom,20px);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',-apple-system,sans-serif;min-height:100vh;max-width:430px;margin:0 auto;overflow-x:hidden}
+::-webkit-scrollbar{display:none}
 
-/* ── HEADER ── */
-.hdr{background:var(--white);padding:calc(var(--st) + 8px) 20px 14px;position:sticky;top:0;z-index:80;border-bottom:1px solid var(--border)}
-.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.logo{font-size:21px;font-weight:900;letter-spacing:-.5px}
-.logo-n{color:var(--accent)}
-.logo-t{color:var(--text)}
-.hdr-actions{display:flex;gap:8px}
-.icon-btn{width:36px;height:36px;border-radius:11px;background:var(--bg);border:1px solid var(--border2);color:var(--text2);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.icon-btn:active{background:var(--border);transform:scale(.93)}
-.date-strip{display:flex;align-items:center;gap:10px}
-.dnav{width:30px;height:30px;border-radius:9px;background:var(--bg);border:1px solid var(--border2);color:var(--text2);font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center}
+/* HEADER */
+.hdr{background:var(--white);padding:calc(var(--st) + 8px) 18px 13px;position:sticky;top:0;z-index:80;border-bottom:1px solid var(--border)}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.logo{font-size:22px;font-weight:900;letter-spacing:-.5px}
+.logo b{color:var(--accent)}
+.hdr-btns{display:flex;gap:8px}
+.hbtn{width:36px;height:36px;border-radius:11px;background:var(--bg);border:1px solid var(--border2);color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.hbtn:active{background:var(--border2)}
+.date-row{display:flex;align-items:center;gap:10px}
+.dnav{width:30px;height:30px;border-radius:9px;background:var(--bg);border:1px solid var(--border2);color:var(--text2);font-size:16px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .dnav:active{background:var(--border2)}
-.date-info{flex:1;text-align:center}
-.date-big{font-size:16px;font-weight:800;color:var(--text)}
+.date-c{flex:1;text-align:center}
+.date-big{font-size:16px;font-weight:800}
 .date-sm{font-size:11px;color:var(--text3);font-weight:600}
 
-/* ── SCROLL ── */
-.page{padding:16px 16px calc(96px + var(--sb));display:flex;flex-direction:column;gap:14px}
+/* SCROLL */
+.page{padding:14px 14px calc(96px + var(--sb));display:flex;flex-direction:column;gap:12px}
+.page-hidden{display:none!important}
 
-/* ── CALORIE HERO CARD ── */
+/* HERO CARD */
 .hero{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
-.hero-top{background:linear-gradient(135deg,#FF5C2C 0%,#FF8C5A 60%,#FFB347 100%);padding:22px 20px;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden}
-.hero-top::before{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;background:rgba(255,255,255,.08);border-radius:50%}
-.hero-top::after{content:'';position:absolute;right:20px;bottom:-30px;width:80px;height:80px;background:rgba(255,255,255,.06);border-radius:50%}
-.ring-wrap{position:relative;flex-shrink:0;z-index:1}
-.rsvg{width:106px;height:106px;transform:rotate(-90deg)}
+.hero-top{background:linear-gradient(135deg,#FF5C2C,#FF8C5A 60%,#FFB347);padding:20px 18px;display:flex;align-items:center;gap:18;position:relative;overflow:hidden}
+.hero-top::before{content:'';position:absolute;right:-20px;top:-20px;width:110px;height:110px;background:rgba(255,255,255,.08);border-radius:50%}
+.ring-w{position:relative;flex-shrink:0;z-index:1}
+.rsvg{width:104px;height:104px;transform:rotate(-90deg)}
 .rbg{fill:none;stroke:rgba(255,255,255,.22);stroke-width:9}
 .rprog{fill:none;stroke:white;stroke-width:9;stroke-linecap:round;stroke-dasharray:282.7;stroke-dashoffset:282.7;transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1)}
 .rcenter{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .rnum{font-size:26px;font-weight:900;color:white;line-height:1}
 .rlbl{font-size:9px;color:rgba(255,255,255,.75);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
-.hero-meta{flex:1;z-index:1}
-.hero-remain-lbl{font-size:12px;color:rgba(255,255,255,.75);font-weight:700;margin-bottom:2px}
-.hero-remain-num{font-size:28px;font-weight:900;color:white;line-height:1;margin-bottom:6px}
-.hero-goal{font-size:12px;color:rgba(255,255,255,.7);font-weight:600}
+.hero-meta{flex:1;color:white;z-index:1}
+.hero-rl{font-size:12px;opacity:.8;font-weight:600;margin-bottom:2px}
+.hero-rn{font-size:30px;font-weight:900;line-height:1;margin-bottom:5px}
+.hero-goal{font-size:12px;opacity:.7;font-weight:600}
 .hero-goal b{color:white}
-.hero-bottom{display:grid;grid-template-columns:repeat(3,1fr)}
-.hmcell{padding:14px 8px;text-align:center;border-right:1px solid var(--border)}
-.hmcell:last-child{border-right:none}
-.hmval{font-size:19px;font-weight:900}
-.hmval.p{color:var(--protein)}
-.hmval.c{color:var(--carbs)}
-.hmval.f{color:var(--fat)}
-.hmlbl{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
-.hmbar{height:3px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
-.hmbar-f{height:100%;border-radius:2px;transition:width .7s ease}
-.hmbar-f.p{background:var(--protein)}
-.hmbar-f.c{background:var(--carbs)}
-.hmbar-f.f{background:var(--fat)}
+.macro-strip{display:grid;grid-template-columns:repeat(3,1fr)}
+.mc{padding:12px 8px;text-align:center;border-right:1px solid var(--border)}
+.mc:last-child{border-right:none}
+.mc-val{font-size:19px;font-weight:900}
+.mc-lbl{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
+.mc-bar{height:3px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
+.mc-bar-f{height:100%;border-radius:2px;transition:width .7s}
 
-/* ── MEAL CARDS ── */
+/* MEAL CARDS */
 .meal-card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
-.mc-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none}
-.mc-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.mc-icon.b{background:#FFF7E0}
-.mc-icon.l{background:#E8F8EE}
-.mc-icon.d{background:#EEF4FF}
-.mc-icon.s{background:#FEF2F2}
+.mc-head{display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer;user-select:none}
+.mc-icon{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
 .mc-title{font-size:15px;font-weight:800}
-.mc-sub{font-size:11px;color:var(--text3);font-weight:600;margin-top:2px}
-.mc-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.mc-sub{font-size:11px;color:var(--text3);font-weight:600;margin-top:1px}
+.mc-right{margin-left:auto;display:flex;align-items:center;gap:8px}
 .mc-kcal{font-size:14px;font-weight:800;color:var(--accent)}
-.chev{color:var(--text3);font-size:13px;font-weight:900;transition:transform .25s}
+.chev{color:var(--text3);font-size:13px;font-weight:900;transition:transform .25s;display:inline-block}
 .chev.o{transform:rotate(90deg)}
 .mc-items{border-top:1px solid var(--border)}
-.mitem{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);animation:slideD .18s ease}
-.mitem:last-of-type{border-bottom:none}
-@keyframes slideD{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.mitem{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--border);animation:sld .18s ease}
+.mitem:last-child{border-bottom:none}
+@keyframes sld{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 .mitem-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0}
 .mitem-info{flex:1;min-width:0}
 .mitem-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mitem-meta{font-size:10px;color:var(--text3);font-weight:600;margin-top:2px}
-.mitem-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.mitem-meta{font-size:10px;color:var(--text3);font-weight:600;margin-top:1px}
+.mitem-r{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .mitem-kcal{font-size:13px;font-weight:800}
 .mitem-del{width:24px;height:24px;border-radius:7px;background:var(--red-bg);border:none;color:var(--red);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.mc-addbtn{display:flex;align-items:center;gap:8px;padding:11px 16px;border-top:1px solid var(--border);border-bottom:none;border-left:none;border-right:none;background:none;color:var(--accent);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;width:100%}
-.mc-addbtn:active{background:var(--accent-bg)}
+.mc-add{display:flex;align-items:center;gap:7px;padding:10px 14px;border-top:1px solid var(--border);border-bottom:none;border-left:none;border-right:none;background:none;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;width:100%;font-family:inherit}
+.mc-add:active{background:var(--accent-bg)}
 
-/* ── FAB ── */
-.fab{position:fixed;bottom:calc(76px + var(--sb));right:18px;width:54px;height:54px;border-radius:17px;background:var(--accent);border:none;color:white;font-size:30px;box-shadow:0 6px 22px rgba(255,92,44,.45);cursor:pointer;z-index:79;display:flex;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s;line-height:1}
-.fab:active{transform:scale(.91);box-shadow:0 3px 12px rgba(255,92,44,.3)}
+/* FAB */
+.fab{position:fixed;bottom:calc(76px + var(--sb));right:18px;width:54px;height:54px;border-radius:17px;background:var(--accent);border:none;color:white;font-size:30px;box-shadow:0 6px 22px rgba(255,92,44,.45);cursor:pointer;z-index:79;display:flex;align-items:center;justify-content:center}
+.fab:active{transform:scale(.91)}
 
-/* ── TAB BAR ── */
+/* TAB BAR */
 .tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--white);border-top:1px solid var(--border);padding:8px 8px calc(var(--sb) + 4px);display:flex;justify-content:space-around;z-index:80}
-.tbtn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 12px;border-radius:12px;cursor:pointer;transition:all .15s}
-.tbtn.on .ticon,.tbtn.on .tlbl{color:var(--accent)}
-.ticon{font-size:22px;color:var(--text3)}
+.tbtn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 12px;border-radius:12px;cursor:pointer}
+.ticon{font-size:22px;filter:grayscale(1);opacity:.5}
 .tlbl{font-size:10px;font-weight:700;color:var(--text3)}
+.tbtn.on .ticon{filter:none;opacity:1}
+.tbtn.on .tlbl{color:var(--accent)}
 
-/* ── OVERLAY ── */
-.ov{position:fixed;inset:0;background:rgba(24,27,46,.55);backdrop-filter:blur(5px);z-index:200;display:none;align-items:flex-end}
-.ov.on{display:flex;animation:ovFade .2s ease}
-@keyframes ovFade{from{opacity:0}to{opacity:1}}
-.sheet{background:var(--white);border-radius:26px 26px 0 0;width:100%;max-height:94vh;overflow-y:auto;padding:10px 20px calc(var(--sb) + 16px);animation:shUp .32s cubic-bezier(.34,1.4,.64,1)}
+/* OVERLAY */
+.ov{position:fixed;inset:0;background:rgba(24,27,46,.6);backdrop-filter:blur(5px);z-index:200;display:none;align-items:flex-end}
+.ov.on{display:flex;animation:ovIn .2s ease}
+@keyframes ovIn{from{opacity:0}to{opacity:1}}
+.sheet{background:var(--white);border-radius:26px 26px 0 0;width:100%;max-height:94vh;overflow-y:auto;padding:10px 18px calc(var(--sb) + 16px);animation:shUp .32s cubic-bezier(.34,1.4,.64,1)}
 @keyframes shUp{from{transform:translateY(110%)}to{transform:translateY(0)}}
-.sh-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 18px}
-.sh-title{font-size:20px;font-weight:900;margin-bottom:16px}
-.sh-sub{font-size:13px;color:var(--text2);font-weight:600;margin-bottom:16px;margin-top:-10px}
+.sh-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px}
+.sh-title{font-size:20px;font-weight:900;margin-bottom:14px}
+.sh-sub{font-size:13px;color:var(--text2);font-weight:600;margin-bottom:14px;margin-top:-10px}
 
-/* ── MEAL TABS ── */
-.mtabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+/* MEAL TABS */
+.mtabs{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
 .mtabs::-webkit-scrollbar{display:none}
-.mtab{flex-shrink:0;padding:7px 14px;border-radius:20px;border:1.5px solid var(--border2);background:var(--bg);font-size:12px;font-weight:800;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .18s;font-family:inherit}
+.mtab{flex-shrink:0;padding:7px 13px;border-radius:20px;border:1.5px solid var(--border2);background:var(--bg);font-size:12px;font-weight:800;color:var(--text2);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px}
 .mtab.on{background:var(--accent);border-color:var(--accent);color:white}
 
-/* ── SEARCH ── */
+/* SEARCH */
 .sbox{position:relative;margin-bottom:10px}
-.sinput{width:100%;background:var(--bg);border:1.5px solid var(--border2);border-radius:13px;padding:12px 38px 12px 42px;font-size:15px;font-family:inherit;font-weight:600;color:var(--text);outline:none;-webkit-appearance:none;transition:border-color .2s}
+.sinput{width:100%;background:var(--bg);border:1.5px solid var(--border2);border-radius:13px;padding:12px 36px 12px 42px;font-size:15px;font-family:inherit;font-weight:600;color:var(--text);outline:none;-webkit-appearance:none}
 .sinput:focus{border-color:var(--accent);background:white}
 .sinput::placeholder{color:var(--text3);font-weight:600}
 .sicon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:17px;pointer-events:none}
 .sclear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--text3);color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;font-weight:900}
 
-/* ── LANG PILLS ── */
-.lang-pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
-.lpill{padding:4px 10px;border-radius:20px;border:1.5px solid var(--border2);background:var(--bg);font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;transition:all .15s}
+/* SCAN BTN */
+.scan-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:var(--green-bg);border:1.5px solid #86EFAC;border-radius:13px;color:var(--green);font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;margin-bottom:12px}
+.scan-btn:active{background:#BBF7D0}
+
+/* BARCODE SCANNER */
+.scanner-wrap{display:none;margin-bottom:12px;border-radius:13px;overflow:hidden;position:relative;background:#000;aspect-ratio:1}
+.scanner-wrap.on{display:block}
+#scanner-video{width:100%;height:100%;object-fit:cover}
+.scanner-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.scanner-frame{width:200px;height:120px;border:2.5px solid var(--green);border-radius:12px;position:relative}
+.scanner-frame::before{content:'';position:absolute;left:0;right:0;top:50%;height:2px;background:rgba(22,163,74,.6);animation:scanLine 1.5s linear infinite}
+@keyframes scanLine{from{top:10%}to{top:90%}}
+.scanner-line{position:absolute;left:0;right:0;height:2px;background:var(--green);opacity:.7}
+.scanner-close{position:absolute;top:10px;right:10px;width:32px;height:32px;background:rgba(0,0,0,.6);border:none;color:white;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10}
+.scanner-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);color:white;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+
+/* LANG PILLS */
+.lang-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.lpill{padding:4px 10px;border-radius:20px;border:1.5px solid var(--border2);background:var(--bg);font-size:11px;font-weight:700;color:var(--text3);cursor:pointer}
 .lpill.on{background:var(--blue-bg);border-color:var(--blue);color:var(--blue)}
 
-/* ── LOADING / EMPTY ── */
-.st-load{text-align:center;padding:32px;display:none}
-.sp{width:28px;height:28px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.st-load p{font-size:13px;color:var(--text3);font-weight:600}
-.st-empty{text-align:center;padding:36px;display:none}
-.st-empty-icon{font-size:46px;margin-bottom:10px}
-.st-empty p{font-size:14px;color:var(--text3);font-weight:600;line-height:1.5}
-
-/* ── QUICK CATS ── */
+/* QUICK */
 .quick-block{margin-bottom:4px}
-.quick-lbl{font-size:12px;font-weight:700;color:var(--text3);margin-bottom:8px}
-.quick-wrap{display:flex;flex-wrap:wrap;gap:7px}
-.qchip{padding:6px 12px;border-radius:20px;background:var(--bg);border:1.5px solid var(--border2);font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .15s;font-family:inherit}
+.quick-lbl{font-size:11px;font-weight:700;color:var(--text3);margin-bottom:6px}
+.quick-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.qchip{padding:5px 11px;border-radius:20px;background:var(--bg);border:1.5px solid var(--border2);font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;font-family:inherit}
 .qchip:active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
 
-/* ── RESULTS ── */
-.results{display:flex;flex-direction:column;gap:8px}
-.rcard{background:var(--bg);border:1.5px solid var(--border);border-radius:13px;padding:13px 14px;cursor:pointer;position:relative;transition:border-color .2s,background .15s}
-.rcard:active{background:var(--accent-bg)}
-.rcard.sel{border-color:var(--accent);background:var(--accent-bg)}
-.rcard-name{font-size:14px;font-weight:800;padding-right:52px}
-.rcard-brand{font-size:11px;color:var(--text3);font-weight:600;margin-top:2px}
-.rcard-macros{display:flex;gap:10px;margin-top:7px}
-.rm{font-size:11px;font-weight:700}
-.rm.p{color:var(--protein)}
-.rm.c{color:var(--carbs)}
-.rm.f{color:var(--fat)}
+/* RESULTS */
+.results{display:flex;flex-direction:column;gap:7px}
+.rcard{background:var(--bg);border:1.5px solid var(--border);border-radius:13px;padding:12px 13px;cursor:pointer;position:relative}
+.rcard:active,.rcard.sel{background:var(--accent-bg);border-color:var(--accent)}
 .rcard-kcal{position:absolute;right:12px;top:12px;font-size:15px;font-weight:900;color:var(--accent)}
-.rcard-src{font-size:10px;color:var(--text3);font-weight:600;margin-top:5px}
+.rcard-name{font-size:14px;font-weight:800;padding-right:50px}
+.rcard-brand{font-size:11px;color:var(--text3);font-weight:600;margin-top:2px}
+.rcard-macros{display:flex;gap:10px;margin-top:6px}
+.rm{font-size:11px;font-weight:700}
+.rcard-src{font-size:10px;color:var(--text3);font-weight:600;margin-top:4px}
 
-/* ── GRAM PANEL ── */
-.gram-panel{background:white;border:2px solid var(--accent);border-radius:16px;padding:16px;margin-top:10px;display:none}
-.gram-panel.on{display:block;animation:slideD .2s ease}
-.gp-name{font-size:14px;font-weight:800;margin-bottom:12px}
+/* GRAM PANEL */
+.gram-panel{background:white;border:2px solid var(--accent);border-radius:16px;padding:15px;margin-top:8px;display:none}
+.gram-panel.on{display:block;animation:sld .2s ease}
+.gp-name{font-size:14px;font-weight:800;margin-bottom:10px}
 .gp-row{display:flex;align-items:center;gap:10px}
-.ginput{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:11px;padding:11px 14px;font-size:18px;font-weight:900;font-family:inherit;color:var(--text);outline:none;text-align:center;-webkit-appearance:none}
+.ginput{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:11px;padding:10px 14px;font-size:18px;font-weight:900;font-family:inherit;color:var(--text);outline:none;text-align:center;-webkit-appearance:none}
 .ginput:focus{border-color:var(--accent)}
 .gunit{font-size:14px;font-weight:700;color:var(--text3)}
-.gquick{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.gq{padding:6px 11px;border-radius:9px;background:var(--bg);border:1.5px solid var(--border2);font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;font-family:inherit}
+.gquick{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.gq{padding:5px 10px;border-radius:9px;background:var(--bg);border:1.5px solid var(--border2);font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;font-family:inherit}
 .gq:active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
-.gprev{display:grid;grid-template-columns:repeat(4,1fr);margin-top:12px;background:var(--bg);border-radius:11px;overflow:hidden}
-.gpc{padding:10px 4px;text-align:center;border-right:1px solid var(--border)}
+.gprev{display:grid;grid-template-columns:repeat(4,1fr);margin-top:10px;background:var(--bg);border-radius:11px;overflow:hidden}
+.gpc{padding:9px 4px;text-align:center;border-right:1px solid var(--border)}
 .gpc:last-child{border-right:none}
-.gpc-val{font-size:15px;font-weight:900}
-.gpc-val.k{color:var(--accent)}
-.gpc-val.p{color:var(--protein)}
-.gpc-val.c{color:var(--carbs)}
-.gpc-val.f{color:var(--fat)}
+.gpc-val{font-size:14px;font-weight:900}
 .gpc-lbl{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
-.gadd{width:100%;margin-top:12px;padding:14px;background:var(--accent);border:none;border-radius:13px;color:white;font-size:15px;font-weight:900;font-family:inherit;cursor:pointer;transition:opacity .15s}
+.gadd{width:100%;margin-top:10px;padding:13px;background:var(--accent);border:none;border-radius:13px;color:white;font-size:15px;font-weight:900;font-family:inherit;cursor:pointer}
 .gadd:active{opacity:.85}
 
-/* ── TOAST ── */
-.toast{position:fixed;top:calc(var(--st) + 68px);left:50%;transform:translateX(-50%) translateY(-6px) scale(.95);background:var(--text);color:white;padding:10px 20px;border-radius:14px;font-size:13px;font-weight:700;box-shadow:var(--sh3);z-index:500;opacity:0;transition:all .25s;white-space:nowrap;pointer-events:none}
-.toast.on{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
+/* LOADING/EMPTY */
+.st-load{text-align:center;padding:28px;display:none}
+.sp{width:26px;height:26px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.st-load p{font-size:13px;color:var(--text3);font-weight:600}
+.st-empty{text-align:center;padding:32px;display:none}
+.st-empty-icon{font-size:44px;margin-bottom:8px}
+.st-empty p{font-size:14px;color:var(--text3);font-weight:600;line-height:1.5}
 
-/* ── RECIPES PAGE ── */
-.page-hidden{display:none}
-.rec-hero{background:linear-gradient(135deg,#7C3AED,#A855F7);border-radius:var(--r);padding:20px;color:white;margin-bottom:0}
-.rec-hero h2{font-size:20px;font-weight:900;margin-bottom:4px}
-.rec-hero p{font-size:13px;opacity:.8;font-weight:600}
-.rec-list{display:flex;flex-direction:column;gap:10px}
-.rec-card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;cursor:pointer}
-.rec-card-top{padding:14px 16px;display:flex;align-items:flex-start;gap:12px}
-.rec-emoji{width:44px;height:44px;border-radius:13px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.rec-info{flex:1;min-width:0}
-.rec-name{font-size:15px;font-weight:800}
-.rec-meta{font-size:11px;color:var(--text3);font-weight:600;margin-top:3px}
-.rec-macros{display:flex;gap:8px;margin-top:7px;flex-wrap:wrap}
-.rchip{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700}
-.rchip.k{background:var(--accent-bg);color:var(--accent)}
-.rchip.p{background:var(--red-bg);color:var(--red)}
-.rchip.c{background:var(--yellow-bg);color:var(--yellow)}
-.rchip.f{background:var(--purple-bg);color:var(--purple)}
-.rec-actions{display:flex;border-top:1px solid var(--border)}
-.rec-act{flex:1;padding:10px;background:none;border:none;border-right:1px solid var(--border);color:var(--text2);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
-.rec-act:last-child{border-right:none}
-.rec-act:active{background:var(--bg)}
-.rec-act.share{color:var(--blue)}
-.rec-act.add-meal{color:var(--accent)}
-.rec-act.del{color:var(--red)}
-.rec-empty{text-align:center;padding:40px 20px;color:var(--text3)}
-.rec-empty-icon{font-size:52px;margin-bottom:12px}
-.rec-empty p{font-size:14px;font-weight:600;line-height:1.6}
-
-/* ── NEW RECIPE FORM ── */
-.form-group{margin-bottom:14px}
-.form-label{font-size:13px;font-weight:700;color:var(--text2);margin-bottom:6px;display:block}
-.form-input{width:100%;background:var(--bg);border:1.5px solid var(--border2);border-radius:11px;padding:11px 14px;font-size:14px;font-family:inherit;font-weight:600;color:var(--text);outline:none;-webkit-appearance:none;transition:border-color .2s}
-.form-input:focus{border-color:var(--accent)}
-.form-textarea{width:100%;background:var(--bg);border:1.5px solid var(--border2);border-radius:11px;padding:11px 14px;font-size:14px;font-family:inherit;font-weight:600;color:var(--text);outline:none;resize:none;min-height:80px;transition:border-color .2s}
-.form-textarea:focus{border-color:var(--accent)}
-.rec-ingr-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
-.ingr-row{display:flex;align-items:center;gap:8px}
-.ingr-name{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;font-weight:600;color:var(--text);outline:none}
-.ingr-name:focus{border-color:var(--accent)}
-.ingr-g{width:70px;background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;padding:9px 8px;font-size:13px;font-family:inherit;font-weight:700;color:var(--text);outline:none;text-align:center}
-.ingr-g:focus{border-color:var(--accent)}
-.ingr-del{width:30px;height:30px;border-radius:9px;background:var(--red-bg);border:none;color:var(--red);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.add-ingr-btn{display:flex;align-items:center;gap:7px;padding:9px 14px;background:var(--bg);border:1.5px dashed var(--border2);border-radius:11px;color:var(--text2);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;width:100%;justify-content:center}
-.add-ingr-btn:active{background:var(--border)}
-.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.save-rec-btn{width:100%;margin-top:6px;padding:14px;background:var(--accent);border:none;border-radius:13px;color:white;font-size:15px;font-weight:900;font-family:inherit;cursor:pointer}
-.save-rec-btn:active{opacity:.85}
-
-/* ── SETTINGS ── */
-.settings-list{display:flex;flex-direction:column;gap:2px}
-.srow{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)}
+/* SETTINGS */
+.srow{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border)}
 .srow:last-child{border-bottom:none}
 .srow-lbl{font-size:14px;font-weight:700}
 .srow-sub{font-size:11px;color:var(--text3);font-weight:600;margin-top:2px}
-.srow-input{width:80px;background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;padding:8px 10px;font-size:14px;font-weight:800;font-family:inherit;color:var(--text);text-align:center;outline:none;-webkit-appearance:none}
+.srow-input{width:76px;background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;padding:7px 9px;font-size:14px;font-weight:800;font-family:inherit;color:var(--text);text-align:center;outline:none;-webkit-appearance:none}
 .srow-input:focus{border-color:var(--accent)}
-.ssave{width:100%;margin-top:16px;padding:14px;background:var(--accent);border:none;border-radius:13px;color:white;font-size:15px;font-weight:900;font-family:inherit;cursor:pointer}
 
-/* ── SHARE MODAL ── */
-.share-card{background:var(--bg);border-radius:14px;padding:16px;margin-bottom:14px;border:1.5px solid var(--border)}
-.share-code{font-size:32px;font-weight:900;text-align:center;letter-spacing:4px;color:var(--accent);padding:14px;background:var(--accent-bg);border-radius:11px;cursor:pointer;user-select:all}
-.share-hint{font-size:12px;color:var(--text3);font-weight:600;text-align:center;margin-top:8px}
-.share-import{width:100%;margin-top:8px}
-.share-import-inp{width:100%;background:var(--bg);border:1.5px solid var(--border2);border-radius:11px;padding:11px 14px;font-size:16px;font-family:inherit;font-weight:700;color:var(--text);outline:none;text-align:center;letter-spacing:3px;-webkit-appearance:none}
-.share-import-inp:focus{border-color:var(--accent)}
-.share-import-btn{width:100%;margin-top:10px;padding:13px;background:var(--blue);border:none;border-radius:12px;color:white;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer}
+/* MACRO PIE SETTINGS */
+.macro-pct-card{background:var(--bg);border-radius:14px;padding:14px;margin:14px 0}
+.macro-pct-title{font-size:13px;font-weight:800;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.pct-total{font-size:13px;font-weight:900}
+.pct-total.ok{color:var(--green)}
+.pct-total.bad{color:var(--red)}
+.macro-pct-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.macro-pct-row:last-child{margin-bottom:0}
+.macro-pct-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.macro-pct-name{font-size:13px;font-weight:700;width:80px}
+.macro-pct-slider{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;outline:none;cursor:pointer}
+.macro-pct-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;cursor:pointer}
+.macro-pct-val{font-size:13px;font-weight:900;width:36px;text-align:right}
+.pct-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;display:flex;margin:10px 0 4px}
+.pct-bar-p{background:var(--protein);transition:width .3s}
+.pct-bar-c{background:var(--carbs);transition:width .3s}
+.pct-bar-f{background:var(--fat);transition:width .3s}
+.pct-bar-legend{display:flex;gap:12px;font-size:11px;font-weight:700}
+.ssave{width:100%;margin-top:14px;padding:13px;background:var(--accent);border:none;border-radius:13px;color:white;font-size:15px;font-weight:900;font-family:inherit;cursor:pointer}
 
-/* ── RECIPE DETAIL ── */
-.rd-header{background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;padding:18px;color:white;margin-bottom:14px}
-.rd-header h3{font-size:20px;font-weight:900;margin-bottom:4px}
-.rd-macros{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-.rd-m{background:rgba(255,255,255,.2);padding:4px 10px;border-radius:8px;font-size:12px;font-weight:700;color:white}
-.rd-section{margin-bottom:16px}
-.rd-section-title{font-size:14px;font-weight:800;margin-bottom:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;font-size:11px}
-.rd-ingr-item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:14px}
-.rd-ingr-item:last-child{border-bottom:none}
-.rd-ingr-name{font-weight:600}
-.rd-ingr-g{font-weight:800;color:var(--text2)}
-.rd-add-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:13px;color:white;font-size:15px;font-weight:900;font-family:inherit;cursor:pointer}
+/* RECIPES */
+.rec-hero{background:linear-gradient(135deg,var(--purple),#A855F7);border-radius:var(--r);padding:18px;color:white}
+.rec-hero h2{font-size:20px;font-weight:900;margin-bottom:3px}
+.rec-hero p{font-size:13px;opacity:.8;font-weight:600}
+.rec-card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:10px}
+.rec-top{padding:13px 14px;display:flex;align-items:flex-start;gap:11px}
+.rec-emoji{width:44px;height:44px;border-radius:13px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.rec-info{flex:1;min-width:0}
+.rec-name{font-size:15px;font-weight:800}
+.rec-meta{font-size:11px;color:var(--text3);font-weight:600;margin-top:2px}
+.rec-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.rchip{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700}
+.rec-acts{display:flex;border-top:1px solid var(--border)}
+.ract{flex:1;padding:9px 4px;background:none;border:none;border-right:1px solid var(--border);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px}
+.ract:last-child{border-right:none}
+.ract:active{background:var(--bg)}
 
-::-webkit-scrollbar{display:none}
+/* RECIPE FORM */
+.form-group{margin-bottom:12px}
+.form-label{font-size:13px;font-weight:700;color:var(--text2);margin-bottom:5px;display:block}
+.form-input{width:100%;background:var(--bg);border:1.5px solid var(--border2);border-radius:11px;padding:10px 13px;font-size:14px;font-family:inherit;font-weight:600;color:var(--text);outline:none;-webkit-appearance:none}
+.form-input:focus{border-color:var(--accent);background:white}
+.form-textarea{width:100%;background:var(--bg);border:1.5px solid var(--border2);border-radius:11px;padding:10px 13px;font-size:14px;font-family:inherit;font-weight:600;color:var(--text);outline:none;resize:none;min-height:70px}
+.form-textarea:focus{border-color:var(--accent);background:white}
+.ingr-row{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.ingr-name{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;padding:8px 11px;font-size:13px;font-family:inherit;font-weight:600;color:var(--text);outline:none}
+.ingr-name:focus{border-color:var(--accent)}
+.ingr-g{width:65px;background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;padding:8px 8px;font-size:13px;font-family:inherit;font-weight:700;color:var(--text);outline:none;text-align:center;-webkit-appearance:none}
+.ingr-g:focus{border-color:var(--accent)}
+.ingr-del{width:28px;height:28px;border-radius:8px;background:var(--red-bg);border:none;color:var(--red);font-size:14px;cursor:pointer}
+.add-ingr{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;background:var(--bg);border:1.5px dashed var(--border2);border-radius:11px;color:var(--text2);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;width:100%;margin-bottom:12px}
+.save-btn{width:100%;padding:13px;background:var(--accent);border:none;border-radius:13px;color:white;font-size:15px;font-weight:900;font-family:inherit;cursor:pointer}
+.save-btn:active{opacity:.85}
+
+/* SHARE */
+.share-code{font-size:28px;font-weight:900;text-align:center;letter-spacing:4px;color:var(--accent);padding:14px;background:var(--accent-bg);border-radius:11px;cursor:pointer;user-select:all;margin-bottom:8px}
+.share-hint{font-size:12px;color:var(--text3);font-weight:600;text-align:center;margin-bottom:18px}
+.share-imp{width:100%;background:var(--bg);border:1.5px solid var(--border2);border-radius:11px;padding:11px 14px;font-size:16px;font-family:inherit;font-weight:700;color:var(--text);outline:none;text-align:center;letter-spacing:3px;-webkit-appearance:none;margin-bottom:10px}
+.share-imp:focus{border-color:var(--accent)}
+.share-imp-btn{width:100%;padding:12px;background:var(--blue);border:none;border-radius:12px;color:white;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer}
+
+/* TOAST */
+.toast{position:fixed;top:calc(var(--st) + 68px);left:50%;transform:translateX(-50%) scale(.95);background:var(--text);color:white;padding:10px 20px;border-radius:14px;font-size:13px;font-weight:700;box-shadow:var(--sh2);z-index:500;opacity:0;transition:all .25s;white-space:nowrap;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) scale(1)}
+
+/* PROGRESS */
+.prog-card{background:white;border-radius:14px;padding:14px;border:1.5px solid var(--border);margin-bottom:8px}
+.prog-card.today{border-color:var(--accent)}
+.prog-date{font-size:14px;font-weight:800}
+.prog-kcal{font-size:15px;font-weight:900;color:var(--accent)}
+.prog-bar{height:6px;background:var(--border);border-radius:3px;margin:8px 0;overflow:hidden}
+.prog-bar-f{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px}
+.prog-macros{display:flex;gap:14px;font-size:12px;font-weight:700}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:36px 20px;color:var(--text3)}
+.empty-state .ei{font-size:52px;margin-bottom:12px}
+.empty-state p{font-size:14px;font-weight:700;line-height:1.6}
 </style>
 </head>
 <body>
 
 <div class="toast" id="toast"></div>
 
-<!-- ══════════ HEADER ══════════ -->
+<!-- HEADER -->
 <div class="hdr">
   <div class="hdr-top">
-    <div class="logo"><span class="logo-n">Nutri</span><span class="logo-t">Track</span></div>
-    <div class="hdr-actions">
-      <button class="icon-btn" onclick="openSettings()" title="Цели">🎯</button>
-      <button class="icon-btn" onclick="openShare(null)" title="Поделиться">🔗</button>
+    <div class="logo"><b>Nutri</b>Track</div>
+    <div class="hdr-btns">
+      <button class="hbtn" onclick="openOv('ovSettings')">🎯</button>
+      <button class="hbtn" onclick="openShare(null)">🔗</button>
     </div>
   </div>
-  <div class="date-strip">
+  <div class="date-row">
     <button class="dnav" onclick="chDay(-1)">‹</button>
-    <div class="date-info">
+    <div class="date-c">
       <div class="date-big" id="dBig"></div>
       <div class="date-sm"  id="dSm"></div>
     </div>
@@ -326,84 +310,63 @@ body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',-app
   </div>
 </div>
 
-<!-- ══════════ DIARY PAGE ══════════ -->
+<!-- DIARY -->
 <div class="page" id="pageDiary">
-
-  <!-- Hero calorie card -->
-  <div class="hero">
+  <div class="hero" id="heroCard">
     <div class="hero-top">
-      <div class="ring-wrap">
-        <svg class="rsvg" viewBox="0 0 100 100">
-          <circle class="rbg" cx="50" cy="50" r="45"/>
-          <circle class="rprog" id="rprog" cx="50" cy="50" r="45"/>
+      <div class="ring-w">
+        <svg class="rsvg" viewBox="0 0 104 104">
+          <circle class="rbg" cx="52" cy="52" r="45"/>
+          <circle class="rprog" id="rprog" cx="52" cy="52" r="45"/>
         </svg>
         <div class="rcenter">
-          <div class="rnum"  id="rnum">0</div>
+          <div class="rnum" id="rnum">0</div>
           <div class="rlbl">ккал</div>
         </div>
       </div>
       <div class="hero-meta">
-        <div class="hero-remain-lbl">Осталось сегодня</div>
-        <div class="hero-remain-num" id="hRemain">0</div>
+        <div class="hero-rl">Осталось сегодня</div>
+        <div class="hero-rn" id="hRemain">0</div>
         <div class="hero-goal">Цель: <b id="hGoal">2000</b> ккал</div>
       </div>
     </div>
-    <div class="hero-bottom">
-      <div class="hmcell">
-        <div class="hmval p" id="hmP">0</div>
-        <div class="hmlbl">Белки, г</div>
-        <div class="hmbar"><div class="hmbar-f p" id="hbP" style="width:0%"></div></div>
-      </div>
-      <div class="hmcell">
-        <div class="hmval c" id="hmC">0</div>
-        <div class="hmlbl">Углев., г</div>
-        <div class="hmbar"><div class="hmbar-f c" id="hbC" style="width:0%"></div></div>
-      </div>
-      <div class="hmcell">
-        <div class="hmval f" id="hmF">0</div>
-        <div class="hmlbl">Жиры, г</div>
-        <div class="hmbar"><div class="hmbar-f f" id="hbF" style="width:0%"></div></div>
-      </div>
+    <div class="macro-strip">
+      <div class="mc"><div class="mc-val" id="mP" style="color:var(--protein)">0</div><div class="mc-lbl">Белки, г</div><div class="mc-bar"><div class="mc-bar-f" id="bP" style="width:0%;background:var(--protein)"></div></div></div>
+      <div class="mc"><div class="mc-val" id="mC" style="color:var(--carbs)">0</div><div class="mc-lbl">Углев., г</div><div class="mc-bar"><div class="mc-bar-f" id="bC" style="width:0%;background:var(--carbs)"></div></div></div>
+      <div class="mc"><div class="mc-val" id="mF" style="color:var(--fat)">0</div><div class="mc-lbl">Жиры, г</div><div class="mc-bar"><div class="mc-bar-f" id="bF" style="width:0%;background:var(--fat)"></div></div></div>
     </div>
   </div>
-
-  <!-- Meal cards -->
   <div id="mealsWrap"></div>
-
 </div>
 
-<!-- ══════════ RECIPES PAGE ══════════ -->
+<!-- RECIPES -->
 <div class="page page-hidden" id="pageRecipes">
-  <div class="rec-hero">
-    <h2>📖 Мои рецепты</h2>
-    <p>Создавайте рецепты и делитесь с близкими</p>
-  </div>
-  <div id="recList" style="margin-top:14px"></div>
+  <div class="rec-hero"><h2>📖 Мои рецепты</h2><p>Создавайте и делитесь с женой</p></div>
+  <div id="recList" style="margin-top:12px"></div>
 </div>
 
-<!-- ══════════ FAB ══════════ -->
-<button class="fab" id="fabBtn" onclick="fabAction()">+</button>
+<!-- PROGRESS -->
+<div class="page page-hidden" id="pageProgress">
+  <div style="background:linear-gradient(135deg,#3B82F6,#60A5FA);border-radius:var(--r);padding:18px;color:white;margin-bottom:4px">
+    <div style="font-size:20px;font-weight:900;margin-bottom:3px">📊 Прогресс</div>
+    <div style="font-size:13px;opacity:.8;font-weight:600">Последние 7 дней</div>
+  </div>
+  <div id="progList"></div>
+</div>
 
-<!-- ══════════ TAB BAR ══════════ -->
+<button class="fab" id="fab" onclick="fabClick()">+</button>
+
 <div class="tabbar">
-  <div class="tbtn on" id="tab0" onclick="switchTab(0)">
-    <div class="ticon">📖</div><div class="tlbl">Дневник</div>
-  </div>
-  <div class="tbtn" id="tab1" onclick="switchTab(1)">
-    <div class="ticon">🍳</div><div class="tlbl">Рецепты</div>
-  </div>
-  <div class="tbtn" id="tab2" onclick="switchTab(2)">
-    <div class="ticon">📊</div><div class="tlbl">Прогресс</div>
-  </div>
+  <div class="tbtn on" id="tab0" onclick="switchTab(0)"><div class="ticon">📖</div><div class="tlbl">Дневник</div></div>
+  <div class="tbtn"    id="tab1" onclick="switchTab(1)"><div class="ticon">🍳</div><div class="tlbl">Рецепты</div></div>
+  <div class="tbtn"    id="tab2" onclick="switchTab(2)"><div class="ticon">📊</div><div class="tlbl">Прогресс</div></div>
 </div>
 
-<!-- ══════════ ADD FOOD OVERLAY ══════════ -->
-<div class="ov" id="ovAdd" onclick="ovClick(event,'ovAdd')">
+<!-- ADD FOOD OVERLAY -->
+<div class="ov" id="ovAdd" onclick="ovBg(event,'ovAdd')">
   <div class="sheet">
     <div class="sh-handle"></div>
     <div class="sh-title">Добавить продукт</div>
-
-    <!-- meal tabs -->
     <div class="mtabs" id="mealTabs">
       <button class="mtab" data-m="breakfast" onclick="pickMeal('breakfast',this)">🌅 Завтрак</button>
       <button class="mtab" data-m="lunch"     onclick="pickMeal('lunch',this)">☀️ Обед</button>
@@ -411,70 +374,75 @@ body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',-app
       <button class="mtab" data-m="snack"     onclick="pickMeal('snack',this)">🍎 Перекус</button>
     </div>
 
-    <!-- search -->
-    <div class="sbox">
-      <span class="sicon">🔍</span>
-      <input class="sinput" id="sInput" type="search" placeholder="Поиск на рус / srp / eng…"
-        autocomplete="off" spellcheck="false" oninput="onSInput(this.value)"/>
-      <button class="sclear" id="sClear" onclick="clearS()">×</button>
+    <!-- SCAN -->
+    <button class="scan-btn" onclick="toggleScanner()">
+      <span id="scanBtnIcon">📷</span> <span id="scanBtnTxt">Сканировать штрих-код</span>
+    </button>
+    <div class="scanner-wrap" id="scannerWrap">
+      <video id="scannerVideo" playsinline muted></video>
+      <div class="scanner-overlay">
+        <div class="scanner-frame"></div>
+      </div>
+      <div class="scanner-hint">Наведите камеру на штрих-код</div>
+      <button class="scanner-close" onclick="stopScanner()">✕</button>
     </div>
 
-    <!-- lang pills -->
-    <div class="lang-pills">
-      <div class="lpill on" id="lp-all"  onclick="setLang('all',this)">🌍 Все</div>
-      <div class="lpill"    id="lp-sr"   onclick="setLang('sr',this)">🇷🇸 Srpski</div>
-      <div class="lpill"    id="lp-ru"   onclick="setLang('ru',this)">🇷🇺 Рус</div>
-      <div class="lpill"    id="lp-en"   onclick="setLang('en',this)">🇬🇧 English</div>
+    <!-- SEARCH -->
+    <div class="sbox">
+      <span class="sicon">🔍</span>
+      <input class="sinput" id="sInput" type="search" placeholder="Поиск на рус / srp / eng…" autocomplete="off" spellcheck="false" oninput="onSInput(this.value)"/>
+      <button class="sclear" id="sClear" onclick="clearS()">×</button>
+    </div>
+    <div class="lang-row">
+      <div class="lpill on" id="lp-all" onclick="setLang('all',this)">🌍 Все</div>
+      <div class="lpill" id="lp-sr" onclick="setLang('sr',this)">🇷🇸 Srpski</div>
+      <div class="lpill" id="lp-ru" onclick="setLang('ru',this)">🇷🇺 Рус</div>
+      <div class="lpill" id="lp-en" onclick="setLang('en',this)">🇬🇧 Eng</div>
     </div>
 
     <div class="st-load" id="stLoad"><div class="sp"></div><p>Ищем продукты…</p></div>
-    <div class="st-empty" id="stEmpty">
-      <div class="st-empty-icon">🤷</div>
-      <p>Ничего не найдено.<br>Попробуйте другой запрос<br>или смените язык поиска</p>
-    </div>
+    <div class="st-empty" id="stEmpty"><div class="st-empty-icon">🤷</div><p>Ничего не найдено.<br>Попробуйте другой запрос</p></div>
 
-    <!-- quick cats -->
-    <div class="quick-block" id="quickBlock">
+    <div id="quickBlock">
       <div class="quick-lbl">🇷🇸 Srpski proizvodi</div>
-      <div class="quick-wrap" style="margin-bottom:12px">
+      <div class="quick-wrap">
         <button class="qchip" onclick="doQ('pileća prsa')">Пилећа прса</button>
         <button class="qchip" onclick="doQ('kajmak')">Kajmak</button>
         <button class="qchip" onclick="doQ('burek')">Burek</button>
-        <button class="qchip" onclick="doQ('plazma')">Plazma keks</button>
+        <button class="qchip" onclick="doQ('plazma')">Plazma</button>
         <button class="qchip" onclick="doQ('ajvar')">Ajvar</button>
-        <button class="qchip" onclick="doQ('mleko')">Mleko</button>
-        <button class="qchip" onclick="doQ('jogurt')">Jogurt</button>
         <button class="qchip" onclick="doQ('sarma')">Sarma</button>
         <button class="qchip" onclick="doQ('ćevapi')">Ćevapi</button>
-        <button class="qchip" onclick="doQ('pita')">Pita</button>
+        <button class="qchip" onclick="doQ('jogurt')">Jogurt</button>
+        <button class="qchip" onclick="doQ('gibanica')">Gibanica</button>
+        <button class="qchip" onclick="doQ('pasulj')">Pasulj</button>
       </div>
       <div class="quick-lbl">🇷🇺 Популярное</div>
-      <div class="quick-wrap" style="margin-bottom:12px">
+      <div class="quick-wrap">
         <button class="qchip" onclick="doQ('куриная грудка')">Куриная грудка</button>
         <button class="qchip" onclick="doQ('овсянка')">Овсянка</button>
         <button class="qchip" onclick="doQ('гречка')">Гречка</button>
         <button class="qchip" onclick="doQ('творог')">Творог</button>
         <button class="qchip" onclick="doQ('яйцо')">Яйцо</button>
-        <button class="qchip" onclick="doQ('рис')">Рис</button>
-        <button class="qchip" onclick="doQ('банан')">Банан</button>
         <button class="qchip" onclick="doQ('лосось')">Лосось</button>
+        <button class="qchip" onclick="doQ('банан')">Банан</button>
+        <button class="qchip" onclick="doQ('рис')">Рис</button>
       </div>
       <div class="quick-lbl">🇬🇧 English</div>
       <div class="quick-wrap">
         <button class="qchip" onclick="doQ('chicken breast')">Chicken breast</button>
         <button class="qchip" onclick="doQ('oatmeal')">Oatmeal</button>
-        <button class="qchip" onclick="doQ('greek yogurt')">Greek yogurt</button>
         <button class="qchip" onclick="doQ('salmon')">Salmon</button>
-        <button class="qchip" onclick="doQ('avocado')">Avocado</button>
-        <button class="qchip" onclick="doQ('banana')">Banana</button>
-        <button class="qchip" onclick="doQ('rice')">Rice</button>
         <button class="qchip" onclick="doQ('egg')">Egg</button>
+        <button class="qchip" onclick="doQ('greek yogurt')">Greek yogurt</button>
+        <button class="qchip" onclick="doQ('avocado')">Avocado</button>
+        <button class="qchip" onclick="doQ('tuna')">Tuna</button>
+        <button class="qchip" onclick="doQ('almonds')">Almonds</button>
       </div>
     </div>
 
     <div class="results" id="results"></div>
 
-    <!-- gram panel -->
     <div class="gram-panel" id="gramPanel">
       <div class="gp-name" id="gpName"></div>
       <div class="gp-row">
@@ -491,909 +459,900 @@ body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',-app
         <button class="gq" onclick="setGr(500)">500г</button>
       </div>
       <div class="gprev">
-        <div class="gpc"><div class="gpc-val k" id="gpK">0</div><div class="gpc-lbl">Ккал</div></div>
-        <div class="gpc"><div class="gpc-val p" id="gpP">0г</div><div class="gpc-lbl">Белки</div></div>
-        <div class="gpc"><div class="gpc-val c" id="gpC">0г</div><div class="gpc-lbl">Углев</div></div>
-        <div class="gpc"><div class="gpc-val f" id="gpF">0г</div><div class="gpc-lbl">Жиры</div></div>
+        <div class="gpc"><div class="gpc-val" id="gpK" style="color:var(--accent)">0</div><div class="gpc-lbl">Ккал</div></div>
+        <div class="gpc"><div class="gpc-val" id="gpP" style="color:var(--protein)">0г</div><div class="gpc-lbl">Белки</div></div>
+        <div class="gpc"><div class="gpc-val" id="gpC" style="color:var(--carbs)">0г</div><div class="gpc-lbl">Углев</div></div>
+        <div class="gpc"><div class="gpc-val" id="gpF" style="color:var(--fat)">0г</div><div class="gpc-lbl">Жиры</div></div>
       </div>
       <button class="gadd" onclick="confirmAdd()">Добавить в дневник ✓</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════ SETTINGS OVERLAY ══════════ -->
-<div class="ov" id="ovSettings" onclick="ovClick(event,'ovSettings')">
+<!-- SETTINGS OVERLAY -->
+<div class="ov" id="ovSettings" onclick="ovBg(event,'ovSettings')">
   <div class="sheet">
     <div class="sh-handle"></div>
     <div class="sh-title">🎯 Дневные цели</div>
-    <div class="sh-sub">Настройте норму КБЖУ под себя</div>
-    <div class="settings-list">
-      <div class="srow">
-        <div><div class="srow-lbl">🔥 Калории</div><div class="srow-sub">Суточная норма</div></div>
-        <input class="srow-input" id="gcal"  type="number" min="500" max="9999"/>
+
+    <!-- CALORIES -->
+    <div class="srow">
+      <div><div class="srow-lbl">🔥 Калории</div><div class="srow-sub">Суточная норма</div></div>
+      <input class="srow-input" id="gcal" type="number" min="500" max="9999" oninput="onCalChange(this.value)"/>
+    </div>
+
+    <!-- MACRO PCT CARD -->
+    <div class="macro-pct-card">
+      <div class="macro-pct-title">
+        <span>Распределение макросов</span>
+        <span class="pct-total" id="pctTotal">100%</span>
       </div>
-      <div class="srow">
-        <div><div class="srow-lbl">🥩 Белки</div><div class="srow-sub">граммов в день</div></div>
-        <input class="srow-input" id="gprot" type="number" min="0" max="999"/>
+
+      <!-- PROTEIN -->
+      <div class="macro-pct-row">
+        <div class="macro-pct-dot" style="background:var(--protein)"></div>
+        <div class="macro-pct-name" style="color:var(--protein)">🥩 Белки</div>
+        <input class="macro-pct-slider" id="slP" type="range" min="5" max="60" value="30"
+          style="accent-color:var(--protein)" oninput="onSlider('p',this.value)"/>
+        <div class="macro-pct-val" id="spP" style="color:var(--protein)">30%</div>
       </div>
-      <div class="srow">
-        <div><div class="srow-lbl">🍞 Углеводы</div><div class="srow-sub">граммов в день</div></div>
-        <input class="srow-input" id="gcarb" type="number" min="0" max="999"/>
+      <!-- CARBS -->
+      <div class="macro-pct-row">
+        <div class="macro-pct-dot" style="background:var(--carbs)"></div>
+        <div class="macro-pct-name" style="color:var(--carbs)">🍞 Углев.</div>
+        <input class="macro-pct-slider" id="slC" type="range" min="5" max="70" value="50"
+          style="accent-color:var(--carbs)" oninput="onSlider('c',this.value)"/>
+        <div class="macro-pct-val" id="spC" style="color:var(--carbs)">50%</div>
       </div>
-      <div class="srow">
-        <div><div class="srow-lbl">🥑 Жиры</div><div class="srow-sub">граммов в день</div></div>
-        <input class="srow-input" id="gfat"  type="number" min="0" max="999"/>
+      <!-- FAT -->
+      <div class="macro-pct-row">
+        <div class="macro-pct-dot" style="background:var(--fat)"></div>
+        <div class="macro-pct-name" style="color:var(--fat)">🥑 Жиры</div>
+        <input class="macro-pct-slider" id="slF" type="range" min="5" max="50" value="20"
+          style="accent-color:var(--fat)" oninput="onSlider('f',this.value)"/>
+        <div class="macro-pct-val" id="spF" style="color:var(--fat)">20%</div>
+      </div>
+
+      <!-- BAR -->
+      <div class="pct-bar">
+        <div class="pct-bar-p" id="pctBarP" style="width:30%"></div>
+        <div class="pct-bar-c" id="pctBarC" style="width:50%"></div>
+        <div class="pct-bar-f" id="pctBarF" style="width:20%"></div>
+      </div>
+      <div class="pct-bar-legend">
+        <span style="color:var(--protein)">Б <span id="pctGP">0</span>г</span>
+        <span style="color:var(--carbs)">У <span id="pctGC">0</span>г</span>
+        <span style="color:var(--fat)">Ж <span id="pctGF">0</span>г</span>
       </div>
     </div>
+
     <button class="ssave" onclick="saveGoals()">Сохранить цели</button>
   </div>
 </div>
 
-<!-- ══════════ NEW RECIPE OVERLAY ══════════ -->
-<div class="ov" id="ovNewRec" onclick="ovClick(event,'ovNewRec')">
+<!-- NEW RECIPE OVERLAY -->
+<div class="ov" id="ovNewRec" onclick="ovBg(event,'ovNewRec')">
   <div class="sheet">
     <div class="sh-handle"></div>
-    <div class="sh-title">🍳 Новый рецепт</div>
+    <div class="sh-title" id="recFormTitle">🍳 Новый рецепт</div>
     <div class="form-group">
-      <label class="form-label">Название рецепта</label>
-      <input class="form-input" id="rname" placeholder="Напр. Пилав с овощами" maxlength="60"/>
+      <label class="form-label">Название</label>
+      <input class="form-input" id="rname" placeholder="Напр. Пилав са поврћем" maxlength="60"/>
     </div>
-    <div class="form-group">
-      <label class="form-label">Иконка (эмодзи)</label>
-      <input class="form-input" id="remoji" placeholder="🍽️" maxlength="4" value="🍽️"/>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Порций из рецепта</label>
-      <input class="form-input" id="rservings" type="number" value="1" min="1" max="99"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div><label class="form-label">Иконка</label><input class="form-input" id="remoji" maxlength="4" value="🍽️"/></div>
+      <div><label class="form-label">Порций</label><input class="form-input" id="rservings" type="number" value="1" min="1" max="99"/></div>
     </div>
     <div class="form-group">
       <label class="form-label">Ингредиенты</label>
-      <div class="rec-ingr-list" id="ingrList"></div>
-      <button class="add-ingr-btn" onclick="addIngrRow()">＋ Добавить ингредиент</button>
+      <div id="ingrList"></div>
+      <button class="add-ingr" onclick="addIngrRow()">＋ Добавить ингредиент</button>
     </div>
     <div class="form-group">
       <label class="form-label">Описание / инструкция</label>
       <textarea class="form-textarea" id="rdesc" placeholder="Шаги приготовления…"></textarea>
     </div>
-    <button class="save-rec-btn" onclick="saveRecipe()">Сохранить рецепт</button>
+    <button class="save-btn" onclick="saveRecipe()">Сохранить рецепт</button>
   </div>
 </div>
 
-<!-- ══════════ SHARE OVERLAY ══════════ -->
-<div class="ov" id="ovShare" onclick="ovClick(event,'ovShare')">
+<!-- SHARE OVERLAY -->
+<div class="ov" id="ovShare" onclick="ovBg(event,'ovShare')">
   <div class="sheet">
     <div class="sh-handle"></div>
-    <div class="sh-title" id="shareTitle">🔗 Поделиться рецептом</div>
+    <div class="sh-title" id="shareTitle">🔗 Обмен рецептами</div>
     <div id="shareBody"></div>
   </div>
 </div>
 
-<!-- ══════════ RECIPE DETAIL OVERLAY ══════════ -->
-<div class="ov" id="ovRecDetail" onclick="ovClick(event,'ovRecDetail')">
-  <div class="sheet" id="recDetailBody"></div>
-</div>
-
-<!-- ══════════ PROGRESS OVERLAY ══════════ -->
-<div class="ov" id="ovProgress" onclick="ovClick(event,'ovProgress')">
-  <div class="sheet">
-    <div class="sh-handle"></div>
-    <div class="sh-title">📊 Прогресс за неделю</div>
-    <div id="progressBody"></div>
-  </div>
-</div>
-
 <script>
-/* ═══════════ CONSTANTS ═══════════ */
-const MEALS_CFG = {
-  breakfast:{name:'Завтрак',emoji:'🌅',cls:'b'},
-  lunch:    {name:'Обед',   emoji:'☀️',cls:'l'},
-  dinner:   {name:'Ужин',   emoji:'🌙',cls:'d'},
-  snack:    {name:'Перекус',emoji:'🍎',cls:'s'},
-};
-
-// Built-in database: Serbian + Russian + English + International
-const BUILTIN_DB = [
+/* ═══════ BUILT-IN DATABASE ═══════ */
+const DB=[
   // 🇷🇸 SERBIAN
-  {name:'Пилећа прса (кувана)',        brand:'🇷🇸',k:165,p:31,c:0,  f:3.6, tags:['pileća prsa','piletina','chicken','курица']},
-  {name:'Kajmak',                       brand:'🇷🇸',k:382,p:5, c:3,  f:40,  tags:['kajmak','каjмак']},
-  {name:'Burek sa mesom',               brand:'🇷🇸',k:280,p:10,c:28, f:14,  tags:['burek','бурек']},
-  {name:'Burek sa sirom',               brand:'🇷🇸',k:265,p:9, c:27, f:13,  tags:['burek sir']},
-  {name:'Plazma keks',                  brand:'🇷🇸',k:469,p:8, c:70, f:17,  tags:['plazma','плазма keks','плазма']},
-  {name:'Ajvar (ljuti/blagi)',           brand:'🇷🇸',k:100,p:1.5,c:7,f:8,   tags:['ajvar','ајвар']},
-  {name:'Sarma',                        brand:'🇷🇸',k:180,p:9, c:14, f:9,   tags:['sarma','сарма']},
-  {name:'Ćevapi',                       brand:'🇷🇸',k:240,p:17,c:8,  f:16,  tags:['ćevapi','ħevapi','чевапи']},
-  {name:'Pita sa jabukama',             brand:'🇷🇸',k:230,p:4, c:35, f:9,   tags:['pita','питa','apple pie']},
-  {name:'Gibanica',                     brand:'🇷🇸',k:260,p:8, c:24, f:14,  tags:['gibanica','гибаница']},
-  {name:'Prebranac',                    brand:'🇷🇸',k:145,p:7, c:22, f:4,   tags:['prebranac','пребранац','pasulj']},
-  {name:'Pasulj čorba',                 brand:'🇷🇸',k:120,p:7, c:18, f:2.5, tags:['pasulj','пасуљ','bean soup']},
-  {name:'Jogurt (2.8%)',                brand:'🇷🇸',k:49, p:3.8,c:4.7,f:2.8,tags:['jogurt','јогурт','yogurt']},
-  {name:'Kefir',                        brand:'🇷🇸',k:51, p:3.4,c:4.8,f:2,  tags:['kefir','кефир']},
-  {name:'Mleko (2.8%)',                 brand:'🇷🇸',k:54, p:2.9,c:4.7,f:2.8,tags:['mleko','млеко','milk','молоко']},
-  {name:'Sir (beli/feta)',              brand:'🇷🇸',k:280,p:17,c:3,  f:23,  tags:['sir','сир','feta','cheese']},
-  {name:'Proja',                        brand:'🇷🇸',k:195,p:5, c:30, f:6,   tags:['proja','проja']},
-  {name:'Šopska salata',                brand:'🇷🇸',k:65, p:2, c:4,  f:5,   tags:['šopska','шопска']},
-  {name:'Musaka',                       brand:'🇷🇸',k:185,p:10,c:15, f:10,  tags:['musaka','мусака','moussaka']},
-  {name:'Karađorđeva šnicla',           brand:'🇷🇸',k:315,p:18,c:12, f:22,  tags:['karađorđeva','šnicla']},
-  {name:'Leskovački roštilj (mešano)',  brand:'🇷🇸',k:250,p:19,c:5,  f:18,  tags:['roštilj','рошtiљ','grill']},
-  {name:'Kompot od šljiva',             brand:'🇷🇸',k:80, p:0.5,c:20,f:0,   tags:['kompot','компот']},
-  {name:'Vanilice',                     brand:'🇷🇸',k:460,p:6, c:66, f:20,  tags:['vanilice','ванилице']},
-  {name:'Kifle',                        brand:'🇷🇸',k:312,p:9, c:58, f:5,   tags:['kifle','кифле','croissant']},
-  {name:'Sremska kobasica',             brand:'🇷🇸',k:370,p:16,c:2,  f:33,  tags:['kobasica','колбаса','sausage']},
-  {name:'Kulen',                        brand:'🇷🇸',k:390,p:15,c:2,  f:36,  tags:['kulen','кулен']},
-  {name:'Pavlaka (20%)',                brand:'🇷🇸',k:206,p:2.8,c:4, f:20,  tags:['pavlaka','павлака','sour cream']},
-  {name:'Pileća supa',                  brand:'🇷🇸',k:45, p:4, c:3,  f:2,   tags:['pileća supa','čorba','chicken soup']},
-  {name:'Srpska salata',                brand:'🇷🇸',k:55, p:1, c:6,  f:3,   tags:['srpska salata']},
-  {name:'Baklava',                      brand:'🇷🇸',k:430,p:5, c:55, f:22,  tags:['baklava','баклава']},
+  {name:"Пилећа прса (кувана)",brand:"🇷🇸",k:165,p:31,c:0,f:3.6,tags:["pileća prsa","piletina","chicken","курица","пиле"]},
+  {name:"Kajmak",brand:"🇷🇸",k:382,p:5,c:3,f:40,tags:["kajmak","каjмак"]},
+  {name:"Burek sa mesom",brand:"🇷🇸",k:280,p:10,c:28,f:14,tags:["burek","бурек"]},
+  {name:"Burek sa sirom",brand:"🇷🇸",k:265,p:9,c:27,f:13,tags:["burek sir","burek cheese"]},
+  {name:"Plazma keks",brand:"🇷🇸",k:469,p:8,c:70,f:17,tags:["plazma","плазма","keks"]},
+  {name:"Ajvar",brand:"🇷🇸",k:100,p:1.5,c:7,f:8,tags:["ajvar","ајвар"]},
+  {name:"Sarma",brand:"🇷🇸",k:180,p:9,c:14,f:9,tags:["sarma","сарма","cabbage roll"]},
+  {name:"Ćevapi",brand:"🇷🇸",k:240,p:17,c:8,f:16,tags:["ćevapi","чевапи","kebab"]},
+  {name:"Gibanica",brand:"🇷🇸",k:260,p:8,c:24,f:14,tags:["gibanica","гибаница"]},
+  {name:"Pasulj čorba",brand:"🇷🇸",k:120,p:7,c:18,f:2.5,tags:["pasulj","пасуљ","bean","боб"]},
+  {name:"Jogurt (2.8%)",brand:"🇷🇸",k:49,p:3.8,c:4.7,f:2.8,tags:["jogurt","yogurt","йогурт"]},
+  {name:"Kefir",brand:"🇷🇸",k:51,p:3.4,c:4.8,f:2,tags:["kefir","кефир"]},
+  {name:"Mleko (2.8%)",brand:"🇷🇸",k:54,p:2.9,c:4.7,f:2.8,tags:["mleko","milk","молоко"]},
+  {name:"Sir (beli/feta)",brand:"🇷🇸",k:280,p:17,c:3,f:23,tags:["sir","feta","cheese","сир"]},
+  {name:"Proja",brand:"🇷🇸",k:195,p:5,c:30,f:6,tags:["proja"]},
+  {name:"Musaka",brand:"🇷🇸",k:185,p:10,c:15,f:10,tags:["musaka","мусака","moussaka"]},
+  {name:"Ćufte u sosu",brand:"🇷🇸",k:220,p:14,c:10,f:14,tags:["ćufte","meatballs","фрикадельки"]},
+  {name:"Kifle",brand:"🇷🇸",k:312,p:9,c:58,f:5,tags:["kifle","кифле"]},
+  {name:"Vanilice",brand:"🇷🇸",k:460,p:6,c:66,f:20,tags:["vanilice","ванилице"]},
+  {name:"Baklava",brand:"🇷🇸",k:430,p:5,c:55,f:22,tags:["baklava","баклава"]},
+  {name:"Pavlaka (20%)",brand:"🇷🇸",k:206,p:2.8,c:4,f:20,tags:["pavlaka","sour cream","сметана"]},
+  {name:"Kulen",brand:"🇷🇸",k:390,p:15,c:2,f:36,tags:["kulen","кулен"]},
+  {name:"Šopska salata",brand:"🇷🇸",k:65,p:2,c:4,f:5,tags:["šopska","salata","шопска"]},
+  {name:"Srpska salata",brand:"🇷🇸",k:55,p:1,c:6,f:3,tags:["srpska salata"]},
+  {name:"Prebranac",brand:"🇷🇸",k:145,p:7,c:22,f:4,tags:["prebranac","пребранац","beans"]},
+  {name:"Pileća supa",brand:"🇷🇸",k:45,p:4,c:3,f:2,tags:["pileća supa","čorba","chicken soup"]},
+  {name:"Karađorđeva šnicla",brand:"🇷🇸",k:315,p:18,c:12,f:22,tags:["karađorđeva","šnicla"]},
+  {name:"Roštilj mešano meso",brand:"🇷🇸",k:250,p:19,c:5,f:18,tags:["roštilj","grill","meso"]},
+  {name:"Kompot od šljiva",brand:"🇷🇸",k:80,p:0.5,c:20,f:0,tags:["kompot","компот","plum"]},
+  {name:"Sremska kobasica",brand:"🇷🇸",k:370,p:16,c:2,f:33,tags:["kobasica","сausage","колбаса"]},
+  {name:"Pita sa jabukama",brand:"🇷🇸",k:230,p:4,c:35,f:9,tags:["pita jabuka","apple pie"]},
+  {name:"Hleb beli",brand:"🇷🇸",k:265,p:8,c:53,f:2,tags:["hleb","хлеб","bread","beli hleb"]},
+  {name:"Hleb integralni",brand:"🇷🇸",k:247,p:9,c:44,f:3,tags:["integralni hleb","whole wheat bread"]},
+  {name:"Kajzerica",brand:"🇷🇸",k:290,p:9,c:57,f:3,tags:["kajzerica","bun","lepinja"]},
+  {name:"Lepinja",brand:"🇷🇸",k:270,p:9,c:53,f:3,tags:["lepinja","pita bread"]},
+  {name:"Domaći sok od jabuke",brand:"🇷🇸",k:46,p:0.1,c:11,f:0.1,tags:["sok jabuka","apple juice"]},
   // 🇷🇺 RUSSIAN
-  {name:'Куриная грудка (варёная)',     brand:'🇷🇺',k:165,p:31,c:0,  f:3.6, tags:['куриная','грудка','chicken','пилетина']},
-  {name:'Гречка варёная',              brand:'🇷🇺',k:92, p:3.4,c:20, f:0.6, tags:['гречка','buckwheat']},
-  {name:'Рис варёный',                 brand:'🇷🇺',k:130,p:2.7,c:28, f:0.3, tags:['рис','rice']},
-  {name:'Овсяная каша на воде',        brand:'🇷🇺',k:88, p:3, c:15,  f:1.5, tags:['овсянка','oatmeal','oats']},
-  {name:'Яйцо куриное',               brand:'🇷🇺',k:157,p:12.7,c:.7,f:11.5,tags:['яйцо','egg','jaje']},
-  {name:'Творог 5%',                  brand:'🇷🇺',k:121,p:17, c:2.9, f:5,   tags:['творог','cottage cheese']},
-  {name:'Греческий йогурт 2%',        brand:'🇷🇺',k:59, p:10, c:3.6, f:0.4, tags:['греческий','йогурт','greek yogurt']},
-  {name:'Лосось (запечённый)',         brand:'🇷🇺',k:208,p:20, c:0,   f:13,  tags:['лосось','salmon']},
-  {name:'Гречневые блины',            brand:'🇷🇺',k:180,p:5,  c:25,  f:7,   tags:['блины','pancakes']},
-  {name:'Борщ',                       brand:'🇷🇺',k:65, p:3.5,c:8,   f:2.5, tags:['борщ','borscht']},
-  {name:'Пельмени',                   brand:'🇷🇺',k:245,p:12, c:26,  f:11,  tags:['пельмени','dumplings']},
-  {name:'Картофель варёный',          brand:'🇷🇺',k:86, p:2,  c:19,  f:0.1, tags:['картофель','картошка','potato','krompir']},
-  {name:'Банан',                      brand:'🌍',k:89, p:1.1,c:23,  f:0.3, tags:['банан','banana']},
-  {name:'Яблоко',                     brand:'🌍',k:52, p:0.3,c:14,  f:0.2, tags:['яблоко','apple','jabuka']},
-  {name:'Авокадо',                    brand:'🌍',k:160,p:2,  c:9,   f:15,  tags:['авокадо','avocado']},
-  {name:'Шпинат',                     brand:'🌍',k:23, p:2.9,c:3.6, f:0.4, tags:['шпинат','spinach','špargla']},
-  // 🇬🇧 ENGLISH/INTERNATIONAL
-  {name:'Chicken breast (grilled)',   brand:'🌍',k:165,p:31, c:0,   f:3.6, tags:['chicken breast','piletina','курица']},
-  {name:'Oatmeal (water)',            brand:'🌍',k:88, p:3,  c:15,  f:1.5, tags:['oatmeal','oats','oat','овсянка']},
-  {name:'Greek yogurt',               brand:'🌍',k:59, p:10, c:3.6, f:0.4, tags:['greek yogurt','yogurt']},
-  {name:'Salmon (baked)',             brand:'🌍',k:208,p:20, c:0,   f:13,  tags:['salmon','losos','лосось']},
-  {name:'Avocado',                    brand:'🌍',k:160,p:2,  c:9,   f:15,  tags:['avocado','авокадо']},
-  {name:'Brown rice (cooked)',        brand:'🌍',k:123,p:2.7,c:26,  f:1,   tags:['brown rice','rice','riža']},
-  {name:'Egg (whole)',                brand:'🌍',k:155,p:13, c:.6,  f:11,  tags:['egg','jaje','яйцо']},
-  {name:'Almonds',                    brand:'🌍',k:579,p:21, c:22,  f:50,  tags:['almonds','badem','миндаль']},
-  {name:'Banana',                     brand:'🌍',k:89, p:1.1,c:23,  f:0.3, tags:['banana','банан']},
-  {name:'Cottage cheese (low-fat)',   brand:'🌍',k:98, p:11, c:3.4, f:4.3, tags:['cottage cheese','творог']},
-  {name:'Tuna (canned)',              brand:'🌍',k:116,p:26, c:0,   f:1,   tags:['tuna','tunjevina','тунец']},
-  {name:'Sweet potato',               brand:'🌍',k:86, p:1.6,c:20,  f:0.1, tags:['sweet potato','batat','батат']},
-  {name:'Olive oil',                  brand:'🌍',k:884,p:0,  c:0,   f:100, tags:['olive oil','maslinovo ulje','оливковое масло']},
-  {name:'Broccoli',                   brand:'🌍',k:34, p:2.8,c:7,   f:0.4, tags:['broccoli','brokoli','брокколи']},
-  {name:'Quinoa (cooked)',            brand:'🌍',k:120,p:4.4,c:21,  f:1.9, tags:['quinoa']},
-  {name:'Milk (whole)',               brand:'🌍',k:61, p:3.2,c:4.8, f:3.3, tags:['milk','mleko','молоко']},
-  {name:'Cheddar cheese',             brand:'🌍',k:402,p:25, c:.4,  f:33,  tags:['cheddar','cheese','sir']},
-  {name:'Pasta (cooked)',             brand:'🌍',k:158,p:5.8,c:31,  f:0.9, tags:['pasta','testenina','макароны']},
-  {name:'Bread (whole wheat)',        brand:'🌍',k:247,p:9,  c:44,  f:3,   tags:['bread','hleb','хлеб']},
-  {name:'Butter',                     brand:'🌍',k:717,p:.9, c:.6,  f:81,  tags:['butter','puter','масло']},
+  {name:"Куриная грудка (варёная)",brand:"🇷🇺",k:165,p:31,c:0,f:3.6,tags:["куриная","грудка","chicken"]},
+  {name:"Гречка варёная",brand:"🇷🇺",k:92,p:3.4,c:20,f:0.6,tags:["гречка","buckwheat"]},
+  {name:"Рис варёный",brand:"🇷🇺",k:130,p:2.7,c:28,f:0.3,tags:["рис","rice"]},
+  {name:"Овсяная каша на воде",brand:"🇷🇺",k:88,p:3,c:15,f:1.5,tags:["овсянка","oatmeal","oats","каша"]},
+  {name:"Яйцо куриное (целое)",brand:"🇷🇺",k:157,p:12.7,c:0.7,f:11.5,tags:["яйцо","egg","jaje"]},
+  {name:"Творог 5%",brand:"🇷🇺",k:121,p:17,c:2.9,f:5,tags:["творог","cottage cheese"]},
+  {name:"Творог 0%",brand:"🇷🇺",k:71,p:18,c:3,f:0.1,tags:["творог обезжиренный","low fat cottage"]},
+  {name:"Греческий йогурт 2%",brand:"🇷🇺",k:59,p:10,c:3.6,f:0.4,tags:["греческий","йогурт","greek yogurt"]},
+  {name:"Лосось запечённый",brand:"🇷🇺",k:208,p:20,c:0,f:13,tags:["лосось","salmon","лосось"]},
+  {name:"Картофель варёный",brand:"🇷🇺",k:86,p:2,c:19,f:0.1,tags:["картофель","картошка","potato","krompir"]},
+  {name:"Борщ",brand:"🇷🇺",k:65,p:3.5,c:8,f:2.5,tags:["борщ","borscht"]},
+  {name:"Пельмени",brand:"🇷🇺",k:245,p:12,c:26,f:11,tags:["пельмени","dumplings"]},
+  {name:"Блины",brand:"🇷🇺",k:206,p:6,c:26,f:9,tags:["блины","pancakes","palačinke"]},
+  {name:"Омлет",brand:"🇷🇺",k:184,p:11,c:2,f:15,tags:["омлет","omelette","omlet"]},
+  {name:"Котлеты куриные",brand:"🇷🇺",k:185,p:18,c:8,f:9,tags:["котлеты","chicken patties"]},
+  {name:"Уха",brand:"🇷🇺",k:56,p:7,c:4,f:1.5,tags:["уха","fish soup"]},
+  {name:"Молоко 2.5%",brand:"🇷🇺",k:54,p:2.9,c:4.7,f:2.5,tags:["молоко","milk","mleko"]},
+  {name:"Кефир 2.5%",brand:"🇷🇺",k:53,p:2.9,c:4,f:2.5,tags:["кефир","kefir"]},
+  {name:"Сметана 15%",brand:"🇷🇺",k:158,p:2.7,c:3.6,f:15,tags:["сметана","sour cream","pavlaka"]},
+  // 🌍 INTERNATIONAL
+  {name:"Chicken breast (grilled)",brand:"🌍",k:165,p:31,c:0,f:3.6,tags:["chicken breast","piletina","курица"]},
+  {name:"Oatmeal (water)",brand:"🌍",k:88,p:3,c:15,f:1.5,tags:["oatmeal","oats","овсянка"]},
+  {name:"Greek yogurt 0%",brand:"🌍",k:59,p:10,c:3.6,f:0.4,tags:["greek yogurt","yogurt"]},
+  {name:"Salmon (baked)",brand:"🌍",k:208,p:20,c:0,f:13,tags:["salmon","losos","лосось"]},
+  {name:"Avocado",brand:"🌍",k:160,p:2,c:9,f:15,tags:["avocado","авокадо"]},
+  {name:"Brown rice (cooked)",brand:"🌍",k:123,p:2.7,c:26,f:1,tags:["brown rice","rice","riža","рис"]},
+  {name:"Egg whole",brand:"🌍",k:155,p:13,c:0.6,f:11,tags:["egg","jaje","яйцо"]},
+  {name:"Egg white",brand:"🌍",k:52,p:11,c:0.7,f:0.2,tags:["egg white","белок яйца"]},
+  {name:"Almonds",brand:"🌍",k:579,p:21,c:22,f:50,tags:["almonds","badem","миндаль"]},
+  {name:"Banana",brand:"🌍",k:89,p:1.1,c:23,f:0.3,tags:["banana","банан"]},
+  {name:"Apple",brand:"🌍",k:52,p:0.3,c:14,f:0.2,tags:["apple","jabuka","яблоко"]},
+  {name:"Tuna (canned in water)",brand:"🌍",k:116,p:26,c:0,f:1,tags:["tuna","tunjevina","тунец"]},
+  {name:"Sweet potato (baked)",brand:"🌍",k:86,p:1.6,c:20,f:0.1,tags:["sweet potato","batat","батат"]},
+  {name:"Olive oil",brand:"🌍",k:884,p:0,c:0,f:100,tags:["olive oil","maslinovo ulje","оливковое масло"]},
+  {name:"Broccoli (steamed)",brand:"🌍",k:34,p:2.8,c:7,f:0.4,tags:["broccoli","brokoli","брокколи"]},
+  {name:"Quinoa (cooked)",brand:"🌍",k:120,p:4.4,c:21,f:1.9,tags:["quinoa","киноа"]},
+  {name:"Whole milk",brand:"🌍",k:61,p:3.2,c:4.8,f:3.3,tags:["milk","mleko","молоко"]},
+  {name:"Cheddar cheese",brand:"🌍",k:402,p:25,c:0.4,f:33,tags:["cheddar","cheese","sir"]},
+  {name:"Pasta (cooked)",brand:"🌍",k:158,p:5.8,c:31,f:0.9,tags:["pasta","testenina","макароны"]},
+  {name:"Whole wheat bread",brand:"🌍",k:247,p:9,c:44,f:3,tags:["bread","hleb","хлеб"]},
+  {name:"Butter",brand:"🌍",k:717,p:0.9,c:0.6,f:81,tags:["butter","puter","масло"]},
+  {name:"Spinach",brand:"🌍",k:23,p:2.9,c:3.6,f:0.4,tags:["spinach","špinat","шпинат"]},
+  {name:"Cottage cheese (low-fat)",brand:"🌍",k:98,p:11,c:3.4,f:4.3,tags:["cottage cheese","творог"]},
+  {name:"Protein powder (whey)",brand:"🌍",k:370,p:80,c:5,f:5,tags:["protein powder","whey","протеин"]},
+  {name:"Peanut butter",brand:"🌍",k:588,p:25,c:20,f:50,tags:["peanut butter","kikiriki","арахисовое масло"]},
+  {name:"Honey",brand:"🌍",k:304,p:0.3,c:82,f:0,tags:["honey","med","мёд"]},
+  {name:"Orange",brand:"🌍",k:47,p:0.9,c:12,f:0.1,tags:["orange","narandža","апельсин"]},
+  {name:"Strawberry",brand:"🌍",k:32,p:0.7,c:8,f:0.3,tags:["strawberry","jagoda","клубника"]},
+  {name:"Blueberry",brand:"🌍",k:57,p:0.7,c:14,f:0.3,tags:["blueberry","borovnica","черника"]},
+  {name:"Walnut",brand:"🌍",k:654,p:15,c:14,f:65,tags:["walnut","orah","грецкий орех"]},
+  {name:"Dark chocolate 70%",brand:"🌍",k:599,p:7.8,c:46,f:43,tags:["dark chocolate","crna čokolada","горький шоколад"]},
+  {name:"Lentils (cooked)",brand:"🌍",k:116,p:9,c:20,f:0.4,tags:["lentils","leća","чечевица"]},
+  {name:"Chickpeas (cooked)",brand:"🌍",k:164,p:8.9,c:27,f:2.6,tags:["chickpeas","leblebija","нут"]},
+  {name:"Beef mince (lean)",brand:"🌍",k:215,p:26,c:0,f:12,tags:["beef mince","ground beef","говяжий фарш","mleveno meso"]},
+  {name:"Turkey breast",brand:"🌍",k:135,p:30,c:0,f:1,tags:["turkey breast","ćuretina","индейка"]},
+  {name:"Tofu (firm)",brand:"🌍",k:76,p:8,c:2,f:4,tags:["tofu"]},
+  {name:"Mozzarella",brand:"🌍",k:280,p:28,c:2.2,f:17,tags:["mozzarella","моцарелла"]},
 ];
 
-/* ═══════════ STATE ═══════════ */
-let curDate = new Date();
-let activeTab = 0;
-let selMeal = 'breakfast';
-let selFood = null;
-let srchLang = 'all';
-let srchTimer = null;
-let openMeals = {breakfast:true,lunch:true,dinner:true,snack:true};
-let editRecId = null;
+/* ═══════ STATE ═══════ */
+const MEALS={breakfast:{name:"Завтрак",emoji:"🌅",color:"#F59E0B"},lunch:{name:"Обед",emoji:"☀️",color:"#10B981"},dinner:{name:"Ужин",emoji:"🌙",color:"#3B82F6"},snack:{name:"Перекус",emoji:"🍎",color:"#EF4444"}};
+const dk=d=>d.toISOString().split("T")[0];
+let curDate=new Date();
+let activeTab=0;
+let selMeal="breakfast";
+let selFood=null;
+let openMeals={breakfast:true,lunch:true,dinner:true,snack:true};
+let editRecIdx=null;
+let srchTimer=null;
+let activeLang="all";
+let scannerRunning=false;
 
-let GOALS = JSON.parse(localStorage.getItem('nt_goals')||'null') || {cal:2000,prot:120,carb:250,fat:65};
-let LOG   = JSON.parse(localStorage.getItem('nt_log')  ||'{}');
-let RECS  = JSON.parse(localStorage.getItem('nt_recs') ||'[]');
+let GOALS=JSON.parse(localStorage.getItem("nt_goals")||'null')||{cal:2000,prot:120,carb:250,fat:65,pPct:30,cPct:50,fPct:20};
+let LOG=JSON.parse(localStorage.getItem("nt_log")||"{}");
+let RECS=JSON.parse(localStorage.getItem("nt_recs")||"[]");
 
-/* ═══════════ UTILS ═══════════ */
-const dk  = d => d.toISOString().split('T')[0];
-const tod = () => dk(curDate);
-function dayLog(){
-  if(!LOG[tod()]) LOG[tod()]={breakfast:[],lunch:[],dinner:[],snack:[]};
-  return LOG[tod()];
-}
-function save(){ localStorage.setItem('nt_log',JSON.stringify(LOG)); }
-function saveGoals(){ 
-  GOALS.cal  = +document.getElementById('gcal').value  || 2000;
-  GOALS.prot = +document.getElementById('gprot').value || 120;
-  GOALS.carb = +document.getElementById('gcarb').value || 250;
-  GOALS.fat  = +document.getElementById('gfat').value  || 65;
-  localStorage.setItem('nt_goals',JSON.stringify(GOALS));
-  closeOv('ovSettings'); render(); toast('✓ Цели сохранены');
-}
-function saveRecs(){ localStorage.setItem('nt_recs',JSON.stringify(RECS)); }
+function save(){localStorage.setItem("nt_log",JSON.stringify(LOG))}
+function saveG(){localStorage.setItem("nt_goals",JSON.stringify(GOALS))}
+function saveR(){localStorage.setItem("nt_recs",JSON.stringify(RECS))}
 
+/* ═══════ TOAST ═══════ */
+let toastTimer=null;
 function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('on');
-  setTimeout(()=>t.classList.remove('on'),2000);
-}
-function plural(n){
-  const m=n%10,c=n%100;
-  if(m===1&&c!==11) return '';
-  if([2,3,4].includes(m)&&![12,13,14].includes(c)) return 'а';
-  return 'ов';
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove("on"),2200);
 }
 
-/* ═══════════ DATE ═══════════ */
-function fmtDate(d){
-  const now=new Date(); now.setHours(0,0,0,0);
-  const cd=new Date(d); cd.setHours(0,0,0,0);
+/* ═══════ DATE ═══════ */
+function fmtDate(){
+  const now=new Date();now.setHours(0,0,0,0);
+  const cd=new Date(curDate);cd.setHours(0,0,0,0);
   const diff=(cd-now)/86400000;
-  const DAYS=['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
-  const MTHS=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-  const dateStr=d.getDate()+' '+MTHS[d.getMonth()];
-  if(diff===0) return ['Сегодня',dateStr];
-  if(diff===-1) return ['Вчера',dateStr];
-  if(diff===1) return ['Завтра',dateStr];
-  return [DAYS[d.getDay()],dateStr];
+  const MTHS=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+  const sub=curDate.getDate()+" "+MTHS[curDate.getMonth()];
+  if(diff===0)return["Сегодня",sub];
+  if(diff===-1)return["Вчера",sub];
+  if(diff===1)return["Завтра",sub];
+  const DAYS=["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
+  return[DAYS[curDate.getDay()]+" "+sub,""];
 }
-function chDay(n){ curDate.setDate(curDate.getDate()+n); render(); }
+function chDay(n){curDate.setDate(curDate.getDate()+n);render()}
 
-/* ═══════════ TOTALS ═══════════ */
+/* ═══════ TOTALS ═══════ */
+function dayLog(){
+  const t=dk(curDate);
+  if(!LOG[t])LOG[t]={breakfast:[],lunch:[],dinner:[],snack:[]};
+  return LOG[t];
+}
 function totals(){
   let k=0,p=0,c=0,f=0,cnt=0;
   Object.values(dayLog()).forEach(arr=>arr.forEach(it=>{
-    const r=it.g/100;
-    k+=(it.k||0)*r; p+=(it.p||0)*r; c+=(it.c||0)*r; f+=(it.f||0)*r; cnt++;
+    const r=it.g/100;k+=(it.k||0)*r;p+=(it.p||0)*r;c+=(it.c||0)*r;f+=(it.f||0)*r;cnt++;
   }));
-  return {k:Math.round(k),p:Math.round(p*10)/10,c:Math.round(c*10)/10,f:Math.round(f*10)/10,cnt};
+  return{k:Math.round(k),p:Math.round(p*10)/10,c:Math.round(c*10)/10,f:Math.round(f*10)/10,cnt};
 }
 
-/* ═══════════ RENDER ═══════════ */
+/* ═══════ RENDER ═══════ */
 function render(){
-  const t=totals();
-  const [big,sm]=fmtDate(curDate);
-  document.getElementById('dBig').textContent=big;
-  document.getElementById('dSm').textContent=sm;
+  const T=totals();
+  const[big,sm]=fmtDate();
+  document.getElementById("dBig").textContent=big;
+  document.getElementById("dSm").textContent=sm||"";
 
   // ring
-  const circ=282.7, pct=Math.min(t.k/GOALS.cal,1);
-  document.getElementById('rprog').style.strokeDashoffset=circ-pct*circ;
-  document.getElementById('rnum').textContent=t.k;
-  document.getElementById('hRemain').textContent=Math.max(0,GOALS.cal-t.k);
-  document.getElementById('hGoal').textContent=GOALS.cal;
+  const circ=282.7,pct=Math.min(T.k/GOALS.cal,1);
+  document.getElementById("rprog").style.strokeDashoffset=circ-pct*circ;
+  document.getElementById("rnum").textContent=T.k;
+  document.getElementById("hRemain").textContent=Math.max(0,GOALS.cal-T.k);
+  document.getElementById("hGoal").textContent=GOALS.cal;
 
   // macros
-  ['P','C','F'].forEach(x=>{
-    const val=t[x.toLowerCase()];
-    const goal=GOALS[x==='P'?'prot':x==='C'?'carb':'fat'];
-    document.getElementById('hm'+x).textContent=val;
-    document.getElementById('hb'+x).style.width=Math.min(val/goal*100,100)+'%';
-  });
+  document.getElementById("mP").textContent=T.p;
+  document.getElementById("mC").textContent=T.c;
+  document.getElementById("mF").textContent=T.f;
+  document.getElementById("bP").style.width=Math.min(T.p/GOALS.prot*100,100)+"%";
+  document.getElementById("bC").style.width=Math.min(T.c/GOALS.carb*100,100)+"%";
+  document.getElementById("bF").style.width=Math.min(T.f/GOALS.fat*100,100)+"%";
 
   renderMeals();
-  if(activeTab===1) renderRecipes();
+  if(activeTab===1)renderRecipes();
+  if(activeTab===2)renderProgress();
 }
 
 function renderMeals(){
-  const wrap=document.getElementById('mealsWrap');
-  wrap.innerHTML='';
+  const wrap=document.getElementById("mealsWrap");
+  wrap.innerHTML="";
   const log=dayLog();
   let any=false;
-
-  Object.entries(MEALS_CFG).forEach(([mkey,mcfg])=>{
+  Object.entries(MEALS).forEach(([mkey,mcfg])=>{
     const items=log[mkey]||[];
-    let mk=0; items.forEach(it=>mk+=Math.round((it.k||0)*it.g/100));
-    if(items.length) any=true;
+    let mk=0;items.forEach(it=>mk+=Math.round((it.k||0)*it.g/100));
+    if(items.length)any=true;
     const open=openMeals[mkey];
-
-    const card=document.createElement('div');
-    card.className='meal-card';
+    const card=document.createElement("div");
+    card.className="meal-card";
+    const pl=n=>n===1?"":[2,3,4].includes(n%10)&&![12,13,14].includes(n%100)?"а":"ов";
     card.innerHTML=`
       <div class="mc-head" onclick="toggleM('${mkey}')">
-        <div class="mc-icon ${mcfg.cls}">${mcfg.emoji}</div>
-        <div>
-          <div class="mc-title">${mcfg.name}</div>
-          <div class="mc-sub">${items.length} продукт${plural(items.length)}</div>
-        </div>
-        <div class="mc-right">
-          ${mk>0?`<div class="mc-kcal">${mk} ккал</div>`:''}
-          <div class="chev ${open?'o':''}" id="chev-${mkey}">›</div>
-        </div>
+        <div class="mc-icon" style="background:${mcfg.color}22">${mcfg.emoji}</div>
+        <div><div class="mc-title">${mcfg.name}</div><div class="mc-sub">${items.length} продукт${pl(items.length)}</div></div>
+        <div class="mc-right">${mk>0?`<div class="mc-kcal">${mk} ккал</div>`:""}<div class="chev${open?" o":""}">›</div></div>
       </div>
-      ${open&&items.length?`<div class="mc-items">${items.map((it,i)=>mItemHTML(it,mkey,i)).join('')}</div>`:''}
-      <button class="mc-addbtn" onclick="openAdd('${mkey}')">＋ Добавить продукт</button>
-    `;
+      ${open&&items.length?`<div class="mc-items">${items.map((it,i)=>mitemHTML(it,mkey,i,items.length)).join("")}</div>`:""}
+      <button class="mc-add" onclick="openAdd('${mkey}')">＋ Добавить продукт</button>`;
     wrap.appendChild(card);
   });
-
   if(!any){
-    const e=document.createElement('div');
-    e.style.cssText='text-align:center;padding:36px;color:var(--text3)';
-    e.innerHTML='<div style="font-size:52px;margin-bottom:12px">🍽️</div><div style="font-size:14px;font-weight:700">Нажмите + для добавления<br>первого продукта</div>';
+    const e=document.createElement("div");
+    e.className="empty-state";
+    e.innerHTML='<div class="ei">🍽️</div><p>Нажмите + чтобы добавить<br>первый продукт</p>';
     wrap.appendChild(e);
   }
 }
 
-function mItemHTML(it,mkey,idx){
+function mitemHTML(it,mkey,idx,len){
   const r=it.g/100;
-  const k=Math.round((it.k||0)*r);
-  const p=(Math.round((it.p||0)*r*10)/10);
-  const c=(Math.round((it.c||0)*r*10)/10);
-  const f=(Math.round((it.f||0)*r*10)/10);
-  return `<div class="mitem">
+  const k=Math.round((it.k||0)*r),p=Math.round((it.p||0)*r*10)/10,c=Math.round((it.c||0)*r*10)/10,f=Math.round((it.f||0)*r*10)/10;
+  return`<div class="mitem" style="${idx===len-1?'border-bottom:none':''}">
     <div class="mitem-dot"></div>
-    <div class="mitem-info">
-      <div class="mitem-name">${it.name}</div>
-      <div class="mitem-meta">${it.g}г &nbsp;·&nbsp; Б${p} У${c} Ж${f}</div>
-    </div>
-    <div class="mitem-right">
-      <div class="mitem-kcal">${k} ккал</div>
-      <button class="mitem-del" onclick="delItem('${mkey}',${idx})">✕</button>
-    </div>
+    <div class="mitem-info"><div class="mitem-name">${it.name}</div><div class="mitem-meta">${it.g}г · Б${p} У${c} Ж${f}</div></div>
+    <div class="mitem-r"><div class="mitem-kcal">${k} ккал</div><button class="mitem-del" onclick="delItem('${mkey}',${idx})">✕</button></div>
   </div>`;
 }
 
-function toggleM(m){ openMeals[m]=!openMeals[m]; renderMeals(); }
-function delItem(m,i){ dayLog()[m].splice(i,1); save(); render(); toast('Удалено'); }
+function toggleM(m){openMeals[m]=!openMeals[m];renderMeals()}
+function delItem(m,i){dayLog()[m].splice(i,1);save();render();toast("Удалено")}
 
-/* ═══════════ TABS ═══════════ */
+/* ═══════ TABS ═══════ */
 function switchTab(n){
   activeTab=n;
   [0,1,2].forEach(i=>{
-    document.getElementById('tab'+i).classList.toggle('on',i===n);
+    document.getElementById("tab"+i).classList.toggle("on",i===n);
+    document.getElementById(["pageDiary","pageRecipes","pageProgress"][i]).classList.toggle("page-hidden",i!==n);
   });
-  document.getElementById('pageDiary').style.display   = n===0?'flex':'none';
-  document.getElementById('pageRecipes').style.display = n===1?'flex':'none';
-  document.getElementById('pageDiary').style.flexDirection='column';
-  document.getElementById('pageRecipes').style.flexDirection='column';
-
-  // fab label
-  document.getElementById('fabBtn').textContent = n===1 ? '＋' : '+';
-  if(n===2){ openProgress(); return; }
-  if(n===1) renderRecipes();
+  document.getElementById("fab").textContent=n===1?"＋":"+";
+  render();
 }
 
-function fabAction(){
-  if(activeTab===1) openNewRec();
-  else openAdd(null);
-}
+function fabClick(){activeTab===1?openNewRec():openAdd(null)}
 
-/* ═══════════ OVERLAY HELPERS ═══════════ */
-function openOv(id){ document.getElementById(id).classList.add('on'); }
-function closeOv(id){ document.getElementById(id).classList.remove('on'); }
-function ovClick(e,id){ if(e.target===document.getElementById(id)) closeOv(id); }
+/* ═══════ OVERLAY ═══════ */
+function openOv(id){document.getElementById(id).classList.add("on")}
+function closeOv(id){document.getElementById(id).classList.remove("on")}
+function ovBg(e,id){if(e.target===document.getElementById(id))closeOv(id)}
 
-/* ═══════════ ADD FOOD ═══════════ */
+/* ═══════ ADD FOOD ═══════ */
 function openAdd(meal){
+  stopScanner();
   selFood=null;
   clearS();
-  document.getElementById('gramPanel').classList.remove('on');
-  document.getElementById('stLoad').style.display='none';
-  document.getElementById('stEmpty').style.display='none';
-  document.getElementById('quickBlock').style.display='block';
-  document.getElementById('results').innerHTML='';
-
-  const m=meal||'breakfast';
+  document.getElementById("gramPanel").classList.remove("on");
+  document.getElementById("stLoad").style.display="none";
+  document.getElementById("stEmpty").style.display="none";
+  document.getElementById("quickBlock").style.display="block";
+  document.getElementById("results").innerHTML="";
+  const m=meal||"breakfast";
   selMeal=m;
-  document.querySelectorAll('.mtab').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
-  openOv('ovAdd');
-  setTimeout(()=>document.getElementById('sInput').focus(),350);
+  document.querySelectorAll(".mtab").forEach(b=>b.classList.toggle("on",b.dataset.m===m));
+  openOv("ovAdd");
+  setTimeout(()=>document.getElementById("sInput").focus(),350);
 }
 
 function pickMeal(m,btn){
   selMeal=m;
-  document.querySelectorAll('.mtab').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  document.querySelectorAll(".mtab").forEach(b=>b.classList.toggle("on",b.dataset.m===m));
 }
 
-/* ═══════════ SEARCH ═══════════ */
-let activeLang='all';
+/* ═══════ BARCODE SCANNER ═══════ */
+function toggleScanner(){
+  if(scannerRunning){stopScanner();return}
+  const wrap=document.getElementById("scannerWrap");
+  const video=document.getElementById("scannerVideo");
+  wrap.classList.add("on");
+  document.getElementById("scanBtnTxt").textContent="Остановить сканер";
+  document.getElementById("scanBtnIcon").textContent="⏹️";
+  scannerRunning=true;
+
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    toast("Камера недоступна в этом браузере");
+    stopScanner();return;
+  }
+
+  navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false})
+    .then(stream=>{
+      video.srcObject=stream;
+      video.play();
+      startQuagga(video,stream);
+    })
+    .catch(()=>{
+      toast("Нет доступа к камере");
+      stopScanner();
+    });
+}
+
+function startQuagga(video,stream){
+  if(typeof Quagga==="undefined"){
+    // fallback: manual barcode input
+    stopScanner();
+    const bc=prompt("Введите штрих-код вручную:");
+    if(bc) fetchBarcode(bc.trim());
+    return;
+  }
+  Quagga.init({
+    inputStream:{type:"LiveStream",target:video,constraints:{facingMode:"environment"}},
+    decoder:{readers:["ean_reader","ean_8_reader","upc_reader","code_128_reader"]},
+    locate:true
+  },err=>{
+    if(err){toast("Ошибка сканера");stopScanner();return}
+    Quagga.start();
+    Quagga.onDetected(result=>{
+      const code=result.codeResult.code;
+      Quagga.stop();
+      stopScanner();
+      fetchBarcode(code);
+    });
+  });
+}
+
+function stopScanner(){
+  scannerRunning=false;
+  const wrap=document.getElementById("scannerWrap");
+  const video=document.getElementById("scannerVideo");
+  wrap.classList.remove("on");
+  document.getElementById("scanBtnTxt").textContent="Сканировать штрих-код";
+  document.getElementById("scanBtnIcon").textContent="📷";
+  if(video.srcObject){video.srcObject.getTracks().forEach(t=>t.stop());video.srcObject=null}
+  if(typeof Quagga!=="undefined"){try{Quagga.stop()}catch(e){}}
+}
+
+async function fetchBarcode(code){
+  toast("🔍 Ищем "+code+"…");
+  document.getElementById("quickBlock").style.display="none";
+  document.getElementById("stLoad").style.display="block";
+  try{
+    const r=await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
+    const d=await r.json();
+    document.getElementById("stLoad").style.display="none";
+    if(d.status===1&&d.product){
+      const p=d.product;
+      const n=p.nutriments||{};
+      const nm=p.product_name_ru||p.product_name_rs||p.product_name_sr||p.product_name_en||p.product_name||"Продукт";
+      const food={
+        name:nm,brand:p.brands||"🌍",
+        k:Math.round(n["energy-kcal_100g"]||n["energy-kcal"]||(n["energy_100g"]||0)/4.184||0),
+        p:Math.round((n.proteins_100g||0)*10)/10,
+        c:Math.round((n.carbohydrates_100g||0)*10)/10,
+        f:Math.round((n.fat_100g||0)*10)/10,
+        src:"off"
+      };
+      renderResults([food]);
+      pickFood(document.querySelector(".rcard"),food);
+      toast("✓ Найдено: "+nm);
+    }else{
+      document.getElementById("stEmpty").style.display="block";
+      toast("❌ Продукт не найден в базе");
+    }
+  }catch(e){
+    document.getElementById("stLoad").style.display="none";
+    toast("❌ Ошибка сети");
+  }
+}
+
+/* ═══════ SEARCH ═══════ */
 function setLang(l,el){
   activeLang=l;
-  document.querySelectorAll('.lpill').forEach(p=>p.classList.remove('on'));
-  el.classList.add('on');
-  const q=document.getElementById('sInput').value;
-  if(q.length>=2) doSearch(q);
+  document.querySelectorAll(".lpill").forEach(p=>p.classList.remove("on"));
+  el.classList.add("on");
+  const q=document.getElementById("sInput").value;
+  if(q.length>=1)doSearch(q);
 }
 
 function onSInput(v){
-  document.getElementById('sClear').style.display=v?'flex':'none';
-  document.getElementById('gramPanel').classList.remove('on');
+  document.getElementById("sClear").style.display=v?"flex":"none";
+  document.getElementById("gramPanel").classList.remove("on");
+  selFood=null;
   clearTimeout(srchTimer);
-  if(!v||v.length<1){
-    document.getElementById('results').innerHTML='';
-    document.getElementById('stLoad').style.display='none';
-    document.getElementById('stEmpty').style.display='none';
-    document.getElementById('quickBlock').style.display='block';
+  if(!v){
+    document.getElementById("results").innerHTML="";
+    document.getElementById("stLoad").style.display="none";
+    document.getElementById("stEmpty").style.display="none";
+    document.getElementById("quickBlock").style.display="block";
     return;
   }
-  document.getElementById('quickBlock').style.display='none';
-  document.getElementById('stLoad').style.display='block';
-  document.getElementById('results').innerHTML='';
+  document.getElementById("quickBlock").style.display="none";
+  document.getElementById("stLoad").style.display="block";
+  document.getElementById("stEmpty").style.display="none";
+  document.getElementById("results").innerHTML="";
   srchTimer=setTimeout(()=>doSearch(v),400);
 }
 
 function doQ(q){
-  document.getElementById('sInput').value=q;
-  document.getElementById('sClear').style.display='flex';
-  document.getElementById('quickBlock').style.display='none';
-  document.getElementById('stLoad').style.display='block';
-  document.getElementById('results').innerHTML='';
-  document.getElementById('gramPanel').classList.remove('on');
-  clearTimeout(srchTimer);
-  srchTimer=setTimeout(()=>doSearch(q),300);
+  document.getElementById("sInput").value=q;
+  document.getElementById("sClear").style.display="flex";
+  onSInput(q);
 }
 
 function clearS(){
-  document.getElementById('sInput').value='';
-  document.getElementById('sClear').style.display='none';
-  document.getElementById('results').innerHTML='';
-  document.getElementById('stLoad').style.display='none';
-  document.getElementById('stEmpty').style.display='none';
-  document.getElementById('quickBlock').style.display='block';
-  document.getElementById('gramPanel').classList.remove('on');
+  document.getElementById("sInput").value="";
+  document.getElementById("sClear").style.display="none";
+  document.getElementById("results").innerHTML="";
+  document.getElementById("stLoad").style.display="none";
+  document.getElementById("stEmpty").style.display="none";
+  document.getElementById("quickBlock").style.display="block";
+  document.getElementById("gramPanel").classList.remove("on");
   selFood=null;
 }
 
-async function doSearch(q){
-  const local=searchLocal(q);
-  // Show local instantly
-  renderResults(local, q, false);
-
-  // Parallel API calls for multiple languages/regions
-  const queries=buildQueries(q);
-  try {
-    const responses=await Promise.allSettled(queries.map(u=>fetch(u).then(r=>r.json())));
-    const apiProducts=[];
-    const seen=new Set(local.map(l=>l.name.toLowerCase()));
-    responses.forEach(res=>{
-      if(res.status==='fulfilled'&&res.value.products){
-        res.value.products.forEach(p=>{
-          const nm=(p.product_name_rs||p.product_name_sr||p.product_name_hr||p.product_name_bs||
-                    p.product_name_ru||p.product_name_en||p.product_name||'').trim();
-          if(!nm) return;
-          const low=nm.toLowerCase();
-          if(seen.has(low)) return;
-          seen.add(low);
-          const n=p.nutriments||{};
-          const k=Math.round(n['energy-kcal_100g']||n['energy-kcal']||n['energy_100g']/4.184||0);
-          const pr=Math.round((n.proteins_100g||n.proteins||0)*10)/10;
-          const cb=Math.round((n.carbohydrates_100g||n.carbohydrates||0)*10)/10;
-          const ft=Math.round((n.fat_100g||n.fat||0)*10)/10;
-          if(k===0&&pr===0&&cb===0) return;
-          apiProducts.push({name:nm,brand:p.brands||'',k,p:pr,c:cb,f:ft,src:'OFF'});
-        });
-      }
-    });
-    document.getElementById('stLoad').style.display='none';
-    const all=[...local,...apiProducts].slice(0,30);
-    if(all.length===0){
-      document.getElementById('stEmpty').style.display='block';
-    } else {
-      renderResults(all, q, true);
-    }
-  } catch(e){
-    document.getElementById('stLoad').style.display='none';
-    if(local.length===0) document.getElementById('stEmpty').style.display='block';
-    else renderResults(local,q,true);
-  }
+function localSearch(q){
+  const ql=q.toLowerCase().replace(/[\s-]/g,"");
+  return DB.filter(it=>{
+    if(it.name.toLowerCase().replace(/[\s-]/g,"").includes(ql))return true;
+    return(it.tags||[]).some(t=>t.toLowerCase().replace(/[\s-]/g,"").includes(ql));
+  }).map(it=>({...it,src:"local"}));
 }
 
-function buildQueries(q){
-  // We detect language and search multiple locales in parallel
-  const hasCyrillic=/[а-яёА-ЯЁ]/.test(q);
-  const hasSerbian=/[čćšžđČĆŠŽĐ]/.test(q)||/pileć|burek|kajmak|ćevap|pita|sarma|burek|gibanica|jogurt|mleko|hleb|krem|biftek/i.test(q);
-  
-  const fields='product_name,product_name_rs,product_name_sr,product_name_hr,product_name_bs,product_name_ru,product_name_en,brands,nutriments';
+async function doSearch(q){
+  const local=localSearch(q);
+  document.getElementById("stLoad").style.display="block";
+  renderResults(local,false);
+
+  const fields="product_name,product_name_rs,product_name_sr,product_name_hr,product_name_bs,product_name_ru,product_name_en,brands,nutriments";
   const base=`https://world.openfoodfacts.org/cgi/search.pl?search_simple=1&action=process&json=1&page_size=20&fields=${fields}`;
   const enc=encodeURIComponent(q);
-  
-  const urls=[];
-  
-  if(activeLang==='all'||activeLang==='sr'||hasSerbian){
-    urls.push(`${base}&search_terms=${enc}&lc=rs`);
-    urls.push(`${base}&search_terms=${enc}&lc=sr`);
-    urls.push(`${base}&search_terms=${enc}&lc=hr`);
-    urls.push(`${base}&search_terms=${enc}&lc=bs`);
+
+  let langs=["rs","sr","hr","ru","en",""];
+  if(activeLang==="sr")langs=["rs","sr","hr","bs"];
+  else if(activeLang==="ru")langs=["ru"];
+  else if(activeLang==="en")langs=["en",""];
+
+  const urls=[...new Set(langs.map(l=>`${base}&search_terms=${enc}${l?`&lc=${l}`:""`))];
+
+  try{
+    const res=await Promise.allSettled(urls.slice(0,4).map(u=>fetch(u).then(r=>r.json())));
+    const seen=new Set(local.map(l=>l.name.toLowerCase()));
+    const api=[];
+    res.forEach(r=>{
+      if(r.status!=="fulfilled"||!r.value.products)return;
+      r.value.products.forEach(p=>{
+        const nm=(p.product_name_rs||p.product_name_sr||p.product_name_hr||p.product_name_bs||p.product_name_ru||p.product_name_en||p.product_name||"").trim();
+        if(!nm||seen.has(nm.toLowerCase()))return;
+        seen.add(nm.toLowerCase());
+        const n=p.nutriments||{};
+        const k=Math.round(n["energy-kcal_100g"]||n["energy-kcal"]||(n["energy_100g"]||0)/4.184||0);
+        const pr=Math.round((n.proteins_100g||n.proteins||0)*10)/10;
+        const cb=Math.round((n.carbohydrates_100g||n.carbohydrates||0)*10)/10;
+        const ft=Math.round((n.fat_100g||n.fat||0)*10)/10;
+        if(k===0&&pr===0&&cb===0)return;
+        api.push({name:nm,brand:p.brands||"🌍",k,p:pr,c:cb,f:ft,src:"off"});
+      });
+    });
+    document.getElementById("stLoad").style.display="none";
+    const all=[...local,...api].slice(0,35);
+    if(!all.length)document.getElementById("stEmpty").style.display="block";
+    else renderResults(all,true);
+  }catch(e){
+    document.getElementById("stLoad").style.display="none";
+    if(!local.length)document.getElementById("stEmpty").style.display="block";
+    else renderResults(local,true);
   }
-  if(activeLang==='all'||activeLang==='ru'||hasCyrillic){
-    urls.push(`${base}&search_terms=${enc}&lc=ru`);
-  }
-  if(activeLang==='all'||activeLang==='en'){
-    urls.push(`${base}&search_terms=${enc}&lc=en`);
-    urls.push(`${base}&search_terms=${enc}`); // global
-  }
-  // Always add a global search
-  if(!urls.some(u=>u.endsWith(`&search_terms=${enc}`))){
-    urls.push(`${base}&search_terms=${enc}`);
-  }
-  // Deduplicate
-  return [...new Set(urls)];
 }
 
-function searchLocal(q){
-  const ql=q.toLowerCase().replace(/[\s-]/g,'');
-  return BUILTIN_DB.filter(it=>{
-    const name=it.name.toLowerCase().replace(/[\s-]/g,'');
-    if(name.includes(ql)) return true;
-    return (it.tags||[]).some(t=>t.toLowerCase().replace(/[\s-]/g,'').includes(ql));
-  }).map(it=>({...it,src:'local'}));
-}
-
-function renderResults(items, q, final){
-  document.getElementById('stLoad').style.display=final?'none':'block';
-  document.getElementById('stEmpty').style.display='none';
-  const cont=document.getElementById('results');
-  cont.innerHTML='';
-  items.forEach(it=>{
-    const d=document.createElement('div');
-    d.className='rcard';
-    d.innerHTML=`
-      <div class="rcard-kcal">${it.k}</div>
-      <div class="rcard-name">${it.name}</div>
-      ${it.brand?`<div class="rcard-brand">${it.brand}</div>`:''}
+function renderResults(items,final){
+  if(final!==false)document.getElementById("stLoad").style.display="none";
+  const cont=document.getElementById("results");
+  cont.innerHTML="";
+  items.forEach(food=>{
+    const d=document.createElement("div");
+    d.className="rcard";
+    d.innerHTML=`<div class="rcard-kcal">${food.k}</div>
+      <div class="rcard-name">${food.name}</div>
+      ${food.brand?`<div class="rcard-brand">${food.brand}</div>`:""}
       <div class="rcard-macros">
-        <span class="rm p">Б ${it.p}г</span>
-        <span class="rm c">У ${it.c}г</span>
-        <span class="rm f">Ж ${it.f}г</span>
+        <span class="rm" style="color:var(--protein)">Б ${food.p}г</span>
+        <span class="rm" style="color:var(--carbs)">У ${food.c}г</span>
+        <span class="rm" style="color:var(--fat)">Ж ${food.f}г</span>
       </div>
-      <div class="rcard-src">${it.src==='local'?'📚 Локальная база':'🌍 Open Food Facts'}</div>
-    `;
-    d.onclick=()=>pickFood(d,it);
+      <div class="rcard-src">${food.src==="local"?"📚 База данных":"🌍 Open Food Facts"}</div>`;
+    d.onclick=()=>pickFood(d,food);
     cont.appendChild(d);
   });
 }
 
 function pickFood(el,food){
-  document.querySelectorAll('.rcard').forEach(r=>r.classList.remove('sel'));
-  el.classList.add('sel');
+  document.querySelectorAll(".rcard").forEach(r=>r.classList.remove("sel"));
+  if(el)el.classList.add("sel");
   selFood=food;
-  document.getElementById('gpName').textContent=food.name;
-  document.getElementById('ginput').value=100;
-  document.getElementById('gramPanel').classList.add('on');
+  document.getElementById("gpName").textContent=food.name;
+  document.getElementById("ginput").value=100;
+  document.getElementById("gramPanel").classList.add("on");
   updPrev();
-  setTimeout(()=>document.getElementById('gramPanel').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+  setTimeout(()=>document.getElementById("gramPanel").scrollIntoView({behavior:"smooth",block:"nearest"}),100);
 }
 
-function setGr(g){ document.getElementById('ginput').value=g; updPrev(); }
-
+function setGr(g){document.getElementById("ginput").value=g;updPrev()}
 function updPrev(){
-  if(!selFood) return;
-  const g=parseFloat(document.getElementById('ginput').value)||0;
-  const r=g/100;
-  document.getElementById('gpK').textContent=Math.round((selFood.k||0)*r);
-  document.getElementById('gpP').textContent=Math.round((selFood.p||0)*r*10)/10+'г';
-  document.getElementById('gpC').textContent=Math.round((selFood.c||0)*r*10)/10+'г';
-  document.getElementById('gpF').textContent=Math.round((selFood.f||0)*r*10)/10+'г';
+  if(!selFood)return;
+  const g=parseFloat(document.getElementById("ginput").value)||0,r=g/100;
+  document.getElementById("gpK").textContent=Math.round((selFood.k||0)*r);
+  document.getElementById("gpP").textContent=Math.round((selFood.p||0)*r*10)/10+"г";
+  document.getElementById("gpC").textContent=Math.round((selFood.c||0)*r*10)/10+"г";
+  document.getElementById("gpF").textContent=Math.round((selFood.f||0)*r*10)/10+"г";
 }
 
 function confirmAdd(){
-  if(!selFood){ toast('Выберите продукт'); return; }
-  const g=parseFloat(document.getElementById('ginput').value)||0;
-  if(g<=0){ toast('Введите граммы'); return; }
+  if(!selFood){toast("Выберите продукт");return}
+  const g=parseFloat(document.getElementById("ginput").value)||0;
+  if(g<=0){toast("Введите граммы");return}
   const log=dayLog();
-  if(!log[selMeal]) log[selMeal]=[];
+  if(!log[selMeal])log[selMeal]=[];
   log[selMeal].push({name:selFood.name,g,k:selFood.k,p:selFood.p,c:selFood.c,f:selFood.f});
-  save(); openMeals[selMeal]=true;
-  closeOv('ovAdd'); render();
+  save();openMeals[selMeal]=true;
+  stopScanner();closeOv("ovAdd");render();
   toast(`✓ ${selFood.name} добавлен`);
 }
 
-/* ═══════════ SETTINGS ═══════════ */
+/* ═══════ SETTINGS — MACRO CALCULATOR ═══════ */
 function openSettings(){
-  document.getElementById('gcal').value=GOALS.cal;
-  document.getElementById('gprot').value=GOALS.prot;
-  document.getElementById('gcarb').value=GOALS.carb;
-  document.getElementById('gfat').value=GOALS.fat;
-  openOv('ovSettings');
+  document.getElementById("gcal").value=GOALS.cal;
+  document.getElementById("slP").value=GOALS.pPct||30;
+  document.getElementById("slC").value=GOALS.cPct||50;
+  document.getElementById("slF").value=GOALS.fPct||20;
+  updatePctUI();
+  openOv("ovSettings");
 }
 
-/* ═══════════ RECIPES ═══════════ */
+function onCalChange(v){
+  GOALS.cal=+v||2000;
+  updatePctUI();
+}
+
+function onSlider(macro,val){
+  val=parseInt(val);
+  // Adjust the other two to keep total=100
+  if(macro==="p"){
+    GOALS.pPct=val;
+    const rem=100-val;
+    const cRatio=GOALS.cPct/(GOALS.cPct+GOALS.fPct)||0.7;
+    GOALS.cPct=Math.round(rem*cRatio);
+    GOALS.fPct=100-val-GOALS.cPct;
+  }else if(macro==="c"){
+    GOALS.cPct=val;
+    const rem=100-val;
+    const pRatio=GOALS.pPct/(GOALS.pPct+GOALS.fPct)||0.6;
+    GOALS.pPct=Math.round(rem*pRatio);
+    GOALS.fPct=100-val-GOALS.pPct;
+  }else{
+    GOALS.fPct=val;
+    const rem=100-val;
+    const pRatio=GOALS.pPct/(GOALS.pPct+GOALS.cPct)||0.4;
+    GOALS.pPct=Math.round(rem*pRatio);
+    GOALS.cPct=100-val-GOALS.pPct;
+  }
+  // clamp
+  GOALS.pPct=Math.max(5,Math.min(GOALS.pPct,85));
+  GOALS.cPct=Math.max(5,Math.min(GOALS.cPct,85));
+  GOALS.fPct=Math.max(5,Math.min(GOALS.fPct,85));
+  updatePctUI();
+}
+
+function updatePctUI(){
+  const cal=parseInt(document.getElementById("gcal").value)||2000;
+  const p=GOALS.pPct||30,c=GOALS.cPct||50,f=GOALS.fPct||20;
+  const total=p+c+f;
+
+  document.getElementById("slP").value=p;
+  document.getElementById("slC").value=c;
+  document.getElementById("slF").value=f;
+  document.getElementById("spP").textContent=p+"%";
+  document.getElementById("spC").textContent=c+"%";
+  document.getElementById("spF").textContent=f+"%";
+
+  const pctEl=document.getElementById("pctTotal");
+  pctEl.textContent=total+"%";
+  pctEl.className="pct-total "+(total===100?"ok":"bad");
+
+  document.getElementById("pctBarP").style.width=p+"%";
+  document.getElementById("pctBarC").style.width=c+"%";
+  document.getElementById("pctBarF").style.width=f+"%";
+
+  // grams = cal * pct% / cal_per_gram
+  const gP=Math.round(cal*p/100/4);
+  const gC=Math.round(cal*c/100/4);
+  const gF=Math.round(cal*f/100/9);
+  document.getElementById("pctGP").textContent=gP;
+  document.getElementById("pctGC").textContent=gC;
+  document.getElementById("pctGF").textContent=gF;
+}
+
+function saveGoals(){
+  const cal=parseInt(document.getElementById("gcal").value)||2000;
+  const p=GOALS.pPct||30,c=GOALS.cPct||50,f=GOALS.fPct||20;
+  if(p+c+f!==100){toast("❌ Сумма процентов должна быть 100%");return}
+  GOALS.cal=cal;
+  GOALS.prot=Math.round(cal*p/100/4);
+  GOALS.carb=Math.round(cal*c/100/4);
+  GOALS.fat=Math.round(cal*f/100/9);
+  GOALS.pPct=p;GOALS.cPct=c;GOALS.fPct=f;
+  saveG();closeOv("ovSettings");render();
+  toast("✓ Цели сохранены");
+}
+
+/* ═══════ RECIPES ═══════ */
+function recMacros(rec){
+  let k=0,p=0,c=0,f=0;
+  (rec.ingredients||[]).forEach(ing=>{
+    const found=DB.find(b=>b.name.toLowerCase()===ing.name.toLowerCase())||{k:ing.k||0,p:ing.p||0,c:ing.c||0,f:ing.f||0};
+    const r=(ing.g||100)/100;
+    k+=found.k*r;p+=found.p*r;c+=found.c*r;f+=found.f*r;
+  });
+  const s=rec.servings||1;
+  return{k:Math.round(k/s),p:Math.round(p/s*10)/10,c:Math.round(c/s*10)/10,f:Math.round(f/s*10)/10};
+}
+
 function renderRecipes(){
-  const list=document.getElementById('recList');
+  const list=document.getElementById("recList");
   if(!RECS.length){
-    list.innerHTML=`<div class="rec-empty">
-      <div class="rec-empty-icon">👨‍🍳</div>
-      <p>Пока нет рецептов.<br>Нажмите <b>+</b> чтобы создать<br>свой первый рецепт!</p>
-    </div>`;
+    list.innerHTML='<div class="empty-state"><div class="ei">👨‍🍳</div><p>Пока нет рецептов.<br>Нажмите + чтобы создать!</p></div>';
     return;
   }
-  list.innerHTML='';
+  list.innerHTML="";
   RECS.forEach((rec,idx)=>{
-    const {k,p,c,f}=recMacros(rec);
-    const d=document.createElement('div');
-    d.className='rec-card';
+    const m=recMacros(rec);
+    const d=document.createElement("div");
+    d.className="rec-card";
     d.innerHTML=`
-      <div class="rec-card-top" onclick="openRecDetail(${idx})">
-        <div class="rec-emoji">${rec.emoji||'🍽️'}</div>
+      <div class="rec-top">
+        <div class="rec-emoji">${rec.emoji||"🍽️"}</div>
         <div class="rec-info">
           <div class="rec-name">${rec.name}</div>
           <div class="rec-meta">${rec.ingredients.length} ингр. · ${rec.servings} порц.</div>
-          <div class="rec-macros">
-            <span class="rchip k">${k} ккал</span>
-            <span class="rchip p">Б ${p}г</span>
-            <span class="rchip c">У ${c}г</span>
-            <span class="rchip f">Ж ${f}г</span>
+          <div class="rec-chips">
+            <span class="rchip" style="background:var(--accent-bg);color:var(--accent)">🔥 ${m.k} ккал</span>
+            <span class="rchip" style="background:var(--red-bg);color:var(--red)">Б ${m.p}г</span>
+            <span class="rchip" style="background:var(--yellow-bg);color:var(--yellow)">У ${m.c}г</span>
+            <span class="rchip" style="background:var(--purple-bg);color:var(--purple)">Ж ${m.f}г</span>
           </div>
         </div>
       </div>
-      <div class="rec-actions">
-        <button class="rec-act add-meal" onclick="addRecToMeal(${idx})">🍽️ В дневник</button>
-        <button class="rec-act share"    onclick="openShare(${idx})">🔗 Поделиться</button>
-        <button class="rec-act"          onclick="editRec(${idx})">✏️ Изменить</button>
-        <button class="rec-act del"      onclick="delRec(${idx})">🗑️</button>
-      </div>
-    `;
+      <div class="rec-acts">
+        <button class="ract" style="color:var(--accent)" onclick="addRecToMeal(${idx})">🍽️ В дневник</button>
+        <button class="ract" style="color:var(--blue)" onclick="openShare(${idx})">🔗 Поделиться</button>
+        <button class="ract" style="color:var(--text2)" onclick="editRec(${idx})">✏️</button>
+        <button class="ract" style="color:var(--red)" onclick="delRec(${idx})">🗑️</button>
+      </div>`;
     list.appendChild(d);
   });
 }
 
-function recMacros(rec){
-  let k=0,p=0,c=0,f=0;
-  (rec.ingredients||[]).forEach(ing=>{
-    const found=BUILTIN_DB.find(b=>b.name.toLowerCase()===ing.name.toLowerCase())||{k:ing.k||0,p:ing.p||0,c:ing.c||0,f:ing.f||0};
-    const r=(ing.g||100)/100;
-    k+=found.k*r; p+=found.p*r; c+=found.c*r; f+=found.f*r;
-  });
-  const s=rec.servings||1;
-  return {k:Math.round(k/s),p:Math.round(p/s*10)/10,c:Math.round(c/s*10)/10,f:Math.round(f/s*10)/10};
-}
-
 function openNewRec(){
-  editRecId=null;
-  document.getElementById('rname').value='';
-  document.getElementById('remoji').value='🍽️';
-  document.getElementById('rservings').value=1;
-  document.getElementById('rdesc').value='';
-  document.getElementById('ingrList').innerHTML='';
-  addIngrRow(); addIngrRow();
-  openOv('ovNewRec');
+  editRecIdx=null;
+  document.getElementById("recFormTitle").textContent="🍳 Новый рецепт";
+  document.getElementById("rname").value="";
+  document.getElementById("remoji").value="🍽️";
+  document.getElementById("rservings").value=1;
+  document.getElementById("rdesc").value="";
+  document.getElementById("ingrList").innerHTML="";
+  addIngrRow();addIngrRow();
+  openOv("ovNewRec");
 }
 
 function editRec(idx){
-  editRecId=idx;
+  editRecIdx=idx;
   const rec=RECS[idx];
-  document.getElementById('rname').value=rec.name||'';
-  document.getElementById('remoji').value=rec.emoji||'🍽️';
-  document.getElementById('rservings').value=rec.servings||1;
-  document.getElementById('rdesc').value=rec.desc||'';
-  document.getElementById('ingrList').innerHTML='';
-  (rec.ingredients||[]).forEach(ing=>{ addIngrRow(ing.name,ing.g); });
-  if(!rec.ingredients||rec.ingredients.length===0) addIngrRow();
-  openOv('ovNewRec');
+  document.getElementById("recFormTitle").textContent="✏️ Изменить рецепт";
+  document.getElementById("rname").value=rec.name||"";
+  document.getElementById("remoji").value=rec.emoji||"🍽️";
+  document.getElementById("rservings").value=rec.servings||1;
+  document.getElementById("rdesc").value=rec.desc||"";
+  document.getElementById("ingrList").innerHTML="";
+  (rec.ingredients||[]).forEach(ing=>addIngrRow(ing.name,ing.g));
+  if(!rec.ingredients||!rec.ingredients.length)addIngrRow();
+  openOv("ovNewRec");
 }
 
-function addIngrRow(name='',g=''){
-  const list=document.getElementById('ingrList');
-  const row=document.createElement('div');
-  row.className='ingr-row';
-  row.innerHTML=`
-    <input class="ingr-name" type="text" placeholder="Название ингредиента" value="${name}" list="ingrSuggest"/>
-    <input class="ingr-g"    type="number" placeholder="г" value="${g}" min="1" max="9999"/>
-    <button class="ingr-del" onclick="this.parentNode.remove()">✕</button>
-  `;
+function addIngrRow(name="",g=""){
+  const list=document.getElementById("ingrList");
+  const row=document.createElement("div");
+  row.className="ingr-row";
+  row.innerHTML=`<input class="ingr-name" placeholder="Ингредиент" value="${name}" list="ingrDL"/>
+    <input class="ingr-g" type="number" placeholder="г" value="${g}" min="1"/>
+    <button class="ingr-del" onclick="this.parentNode.remove()">✕</button>`;
   list.appendChild(row);
-
-  // datalist for suggestions
-  let dl=document.getElementById('ingrSuggest');
-  if(!dl){ dl=document.createElement('datalist'); dl.id='ingrSuggest'; document.body.appendChild(dl); }
-  if(!dl.children.length){
-    BUILTIN_DB.forEach(b=>{ const o=document.createElement('option'); o.value=b.name; dl.appendChild(o); });
-  }
+  let dl=document.getElementById("ingrDL");
+  if(!dl){dl=document.createElement("datalist");dl.id="ingrDL";document.body.appendChild(dl);DB.forEach(b=>{const o=document.createElement("option");o.value=b.name;dl.appendChild(o)})}
 }
 
 function saveRecipe(){
-  const name=document.getElementById('rname').value.trim();
-  if(!name){ toast('Введите название'); return; }
-  const rows=[...document.querySelectorAll('#ingrList .ingr-row')];
-  const ingredients=rows.map(r=>{
-    const n=r.querySelector('.ingr-name').value.trim();
-    const g=parseFloat(r.querySelector('.ingr-g').value)||100;
-    return n?{name:n,g}:null;
-  }).filter(Boolean);
-  if(!ingredients.length){ toast('Добавьте хотя бы один ингредиент'); return; }
-  
-  const rec={
-    id: editRecId!==null ? RECS[editRecId].id : Date.now().toString(36)+Math.random().toString(36).slice(2,5),
-    name,
-    emoji:document.getElementById('remoji').value||'🍽️',
-    servings:parseInt(document.getElementById('rservings').value)||1,
-    desc:document.getElementById('rdesc').value.trim(),
-    ingredients,
-    createdAt:editRecId!==null?RECS[editRecId].createdAt:Date.now(),
-  };
-
-  if(editRecId!==null){ RECS[editRecId]=rec; }
-  else { RECS.push(rec); }
-  saveRecs(); closeOv('ovNewRec'); renderRecipes();
-  toast(editRecId!==null?'✓ Рецепт обновлён':'✓ Рецепт сохранён');
-  editRecId=null;
+  const name=document.getElementById("rname").value.trim();
+  if(!name){toast("Введите название");return}
+  const rows=[...document.querySelectorAll("#ingrList .ingr-row")];
+  const ingredients=rows.map(r=>({name:r.querySelector(".ingr-name").value.trim(),g:parseFloat(r.querySelector(".ingr-g").value)||100})).filter(i=>i.name);
+  if(!ingredients.length){toast("Добавьте ингредиенты");return}
+  const rec={id:editRecIdx!==null?RECS[editRecIdx].id:Date.now().toString(36),name,emoji:document.getElementById("remoji").value||"🍽️",servings:parseInt(document.getElementById("rservings").value)||1,desc:document.getElementById("rdesc").value.trim(),ingredients,createdAt:Date.now()};
+  if(editRecIdx!==null){RECS[editRecIdx]=rec;toast("✓ Рецепт обновлён")}
+  else{RECS.push(rec);toast("✓ Рецепт сохранён")}
+  saveR();closeOv("ovNewRec");renderRecipes();editRecIdx=null;
 }
 
-function delRec(idx){
-  if(!confirm('Удалить рецепт?')) return;
-  RECS.splice(idx,1); saveRecs(); renderRecipes(); toast('Рецепт удалён');
-}
+function delRec(idx){if(!confirm("Удалить рецепт?"))return;RECS.splice(idx,1);saveR();renderRecipes();toast("Удалено")}
 
 function addRecToMeal(idx){
   const rec=RECS[idx];
-  const {k,p,c,f}=recMacros(rec);
-  // Ask which meal
-  const mealName=prompt('Добавить в приём пищи:\n1=Завтрак 2=Обед 3=Ужин 4=Перекус','1');
-  const mmap={1:'breakfast',2:'lunch',3:'dinner',4:'snack'};
-  const m=mmap[mealName]||'snack';
-  dayLog()[m].push({name:rec.name+' (рецепт)',g:100,k,p,c,f});
-  save(); openMeals[m]=true;
-  if(activeTab===0) render(); else render();
-  switchTab(0);
-  toast(`✓ ${rec.name} добавлен в дневник`);
+  const m=recMacros(rec);
+  const log=dayLog();
+  log.snack=log.snack||[];
+  log.snack.push({name:rec.name+" (рецепт)",g:100,k:m.k,p:m.p,c:m.c,f:m.f});
+  save();openMeals.snack=true;switchTab(0);
+  toast(`✓ ${rec.name} добавлен`);
 }
 
-function openRecDetail(idx){
-  const rec=RECS[idx];
-  const {k,p,c,f}=recMacros(rec);
-  const body=document.getElementById('recDetailBody');
-  body.innerHTML=`
-    <div class="sh-handle"></div>
-    <div class="rd-header">
-      <div style="font-size:36px;margin-bottom:8px">${rec.emoji||'🍽️'}</div>
-      <h3>${rec.name}</h3>
-      <div style="font-size:13px;opacity:.8;font-weight:600">${rec.servings} порц. · ${rec.ingredients.length} ингредиентов</div>
-      <div class="rd-macros">
-        <span class="rd-m">🔥 ${k} ккал</span>
-        <span class="rd-m">Б ${p}г</span>
-        <span class="rd-m">У ${c}г</span>
-        <span class="rd-m">Ж ${f}г</span>
-      </div>
-    </div>
-    <div class="rd-section">
-      <div class="rd-section-title">Ингредиенты на 1 порцию</div>
-      ${rec.ingredients.map(ing=>`
-        <div class="rd-ingr-item">
-          <span class="rd-ingr-name">${ing.name}</span>
-          <span class="rd-ingr-g">${Math.round(ing.g/rec.servings)}г</span>
-        </div>
-      `).join('')}
-    </div>
-    ${rec.desc?`<div class="rd-section">
-      <div class="rd-section-title">Приготовление</div>
-      <div style="font-size:14px;font-weight:600;line-height:1.6;color:var(--text2)">${rec.desc.replace(/\n/g,'<br>')}</div>
-    </div>`:''}
-    <button class="rd-add-btn" onclick="addRecToMeal(${idx});closeOv('ovRecDetail')">🍽️ Добавить в дневник</button>
-    <div style="height:16px"></div>
-  `;
-  openOv('ovRecDetail');
-}
-
-/* ═══════════ SHARE ═══════════ */
+/* ═══════ SHARE ═══════ */
 function openShare(recIdx){
-  const body=document.getElementById('shareBody');
-  
-  if(recIdx!==null && recIdx!==undefined){
+  const body=document.getElementById("shareBody");
+  if(recIdx!==null&&recIdx!==undefined){
     const rec=RECS[recIdx];
-    // Encode recipe as base64 share code
-    const code=btoa(unescape(encodeURIComponent(JSON.stringify(rec)))).slice(0,20).toUpperCase();
-    // Store for import
-    localStorage.setItem('share_'+code, JSON.stringify(rec));
-
-    document.getElementById('shareTitle').textContent='🔗 Поделиться рецептом';
-    body.innerHTML=`
-      <div style="font-size:14px;font-weight:700;color:var(--text2);margin-bottom:12px">
-        Поделитесь этим кодом с женой — она сможет импортировать рецепт "${rec.name}":
-      </div>
-      <div class="share-code" onclick="copyCode('${code}')" title="Нажмите для копирования">${code}</div>
-      <div class="share-hint">👆 Нажмите на код чтобы скопировать</div>
-      <div style="margin:20px 0;border-top:1px solid var(--border)"></div>
-      <div style="font-size:14px;font-weight:700;color:var(--text2);margin-bottom:10px">Или введите код от жены:</div>
-      <input class="share-import-inp" id="importCode" placeholder="ВВЕДИТЕ КОД" maxlength="24" oninput="this.value=this.value.toUpperCase()"/>
-      <button class="share-import-btn" onclick="importRecipe()">Импортировать рецепт</button>
-    `;
-  } else {
-    document.getElementById('shareTitle').textContent='🔗 Обмен рецептами';
-    body.innerHTML=`
-      <div style="font-size:14px;font-weight:700;color:var(--text2);margin-bottom:16px">
-        Введите код рецепта от вашей жены:
-      </div>
-      <input class="share-import-inp" id="importCode" placeholder="ВВЕДИТЕ КОД" maxlength="24" oninput="this.value=this.value.toUpperCase()"/>
-      <button class="share-import-btn" onclick="importRecipe()">Импортировать рецепт</button>
-      <div style="margin:16px 0;border-top:1px solid var(--border)"></div>
-      <div style="font-size:13px;font-weight:600;color:var(--text3);text-align:center">
-        Чтобы поделиться рецептом — выберите рецепт в списке и нажмите 🔗
-      </div>
-    `;
+    const code=btoa(unescape(encodeURIComponent(JSON.stringify(rec)))).replace(/[+/=]/g,"").slice(0,18).toUpperCase();
+    localStorage.setItem("share_"+code,JSON.stringify(rec));
+    document.getElementById("shareTitle").textContent="🔗 Поделиться рецептом";
+    body.innerHTML=`<div style="font-size:14px;font-weight:700;color:var(--text2);margin-bottom:10px">Код рецепта «${rec.name}»:</div>
+      <div class="share-code" onclick="cpCode('${code}')">${code}</div>
+      <div class="share-hint">👆 Нажмите чтобы скопировать и отправить жене</div>
+      <div style="border-top:1px solid var(--border);margin:14px 0"></div>
+      <div style="font-size:14px;font-weight:700;color:var(--text2);margin-bottom:10px">Импортировать код от жены:</div>
+      <input class="share-imp" id="importCode" placeholder="ВВЕДИТЕ КОД" maxlength="24" oninput="this.value=this.value.toUpperCase()"/>
+      <button class="share-imp-btn" onclick="importRec()">Импортировать рецепт</button>`;
+  }else{
+    document.getElementById("shareTitle").textContent="🔗 Обмен рецептами";
+    body.innerHTML=`<div style="font-size:14px;font-weight:700;color:var(--text2);margin-bottom:10px">Введите код рецепта от жены:</div>
+      <input class="share-imp" id="importCode" placeholder="ВВЕДИТЕ КОД" maxlength="24" oninput="this.value=this.value.toUpperCase()"/>
+      <button class="share-imp-btn" onclick="importRec()">Импортировать рецепт</button>
+      <div style="font-size:13px;font-weight:600;color:var(--text3);text-align:center;margin-top:14px">Чтобы поделиться — нажмите 🔗 на рецепте</div>`;
   }
-  openOv('ovShare');
+  openOv("ovShare");
 }
 
-function copyCode(code){
-  if(navigator.clipboard) navigator.clipboard.writeText(code);
-  else { const t=document.createElement('textarea'); t.value=code; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); }
-  toast('✓ Код скопирован!');
+function cpCode(code){
+  if(navigator.clipboard)navigator.clipboard.writeText(code).catch(()=>{});
+  else{const t=document.createElement("textarea");t.value=code;document.body.appendChild(t);t.select();document.execCommand("copy");document.body.removeChild(t)}
+  toast("✓ Код скопирован!");
 }
 
-function importRecipe(){
-  const code=(document.getElementById('importCode').value||'').trim().toUpperCase();
-  if(!code){ toast('Введите код'); return; }
-  // Try localStorage first (same device)
-  const stored=localStorage.getItem('share_'+code);
+function importRec(){
+  const code=(document.getElementById("importCode").value||"").trim().toUpperCase();
+  if(!code){toast("Введите код");return}
+  const stored=localStorage.getItem("share_"+code);
   if(stored){
-    try{
-      const rec=JSON.parse(stored);
-      rec.id=Date.now().toString(36);
-      rec.createdAt=Date.now();
-      rec.name=rec.name+' (от жены)';
-      RECS.push(rec); saveRecs();
-      closeOv('ovShare'); switchTab(1);
-      toast(`✓ Рецепт "${rec.name}" импортирован!`);
-      return;
-    }catch(e){}
+    try{const rec=JSON.parse(stored);rec.id=Date.now().toString(36);rec.createdAt=Date.now();rec.name+=" (от жены)";RECS.push(rec);saveR();closeOv("ovShare");switchTab(1);toast(`✓ Рецепт "${rec.name}" импортирован!`);return}catch(e){}
   }
-  // Try base64 decode
-  try{
-    const decoded=decodeURIComponent(escape(atob(code.slice(0,20))));
-    const rec=JSON.parse(decoded);
-    if(rec.name&&rec.ingredients){
-      rec.id=Date.now().toString(36);
-      rec.createdAt=Date.now();
-      rec.name=rec.name+' (импорт)';
-      RECS.push(rec); saveRecs();
-      closeOv('ovShare'); switchTab(1);
-      toast(`✓ Рецепт "${rec.name}" добавлен!`);
-      return;
-    }
-  }catch(e){}
-  toast('❌ Код не найден. Убедитесь что код введён правильно');
+  toast("❌ Код не найден");
 }
 
-/* ═══════════ PROGRESS ═══════════ */
-function openProgress(){
-  const body=document.getElementById('progressBody');
-  const keys=Object.keys(LOG).sort().slice(-7);
-  if(!keys.length){
-    body.innerHTML='<div style="text-align:center;padding:32px;color:var(--text3)"><div style="font-size:46px;margin-bottom:12px">📊</div><div style="font-size:14px;font-weight:600">Данных пока нет.<br>Начните вести дневник!</div></div>';
-  } else {
-    const MTHS=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-    let html='<div style="display:flex;flex-direction:column;gap:10px">';
-    keys.forEach(k=>{
-      const d=new Date(k);
-      const label=d.getDate()+' '+MTHS[d.getMonth()];
-      let kal=0,p=0,c=0,f=0;
-      Object.values(LOG[k]).forEach(arr=>arr.forEach(it=>{
-        const r=it.g/100;
-        kal+=(it.k||0)*r; p+=(it.p||0)*r; c+=(it.c||0)*r; f+=(it.f||0)*r;
-      }));
-      kal=Math.round(kal); p=Math.round(p); c=Math.round(c); f=Math.round(f);
-      const pct=Math.min(kal/GOALS.cal*100,100);
-      const isToday=k===dk(new Date());
-      html+=`<div style="background:var(--bg);border-radius:14px;padding:14px;border:1.5px solid ${isToday?'var(--accent)':'var(--border)'}">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div style="font-size:14px;font-weight:800${isToday?';color:var(--accent)':''}">${label}${isToday?' (сегодня)':''}</div>
-          <div style="font-size:15px;font-weight:900;color:var(--accent)">${kal} ккал</div>
-        </div>
-        <div style="height:6px;background:var(--border);border-radius:3px;margin-bottom:8px;overflow:hidden">
-          <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .5s ease"></div>
-        </div>
-        <div style="display:flex;gap:14px;font-size:12px;font-weight:700;color:var(--text3)">
-          <span style="color:var(--protein)">Б ${p}г</span>
-          <span style="color:var(--carbs)">У ${c}г</span>
-          <span style="color:var(--fat)">Ж ${f}г</span>
-        </div>
+/* ═══════ PROGRESS ═══════ */
+function renderProgress(){
+  const list=document.getElementById("progList");
+  const keys=Object.keys(LOG).sort().slice(-7).reverse();
+  if(!keys.length){list.innerHTML='<div class="empty-state"><div class="ei">📊</div><p>Данных пока нет.<br>Начните вести дневник!</p></div>';return}
+  const MTHS=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+  list.innerHTML="";
+  keys.forEach(k=>{
+    const d=new Date(k);
+    let kal=0,p=0,c=0,f=0;
+    Object.values(LOG[k]).forEach(arr=>arr.forEach(it=>{const r=it.g/100;kal+=(it.k||0)*r;p+=(it.p||0)*r;c+=(it.c||0)*r;f+=(it.f||0)*r}));
+    kal=Math.round(kal);p=Math.round(p);c=Math.round(c);f=Math.round(f);
+    const pct=Math.min(kal/GOALS.cal*100,100);
+    const isToday=k===dk(new Date());
+    const el=document.createElement("div");
+    el.className="prog-card"+(isToday?" today":"");
+    el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="prog-date" style="${isToday?"color:var(--accent)":""}">${d.getDate()} ${MTHS[d.getMonth()]}${isToday?" (сегодня)":""}</div>
+        <div class="prog-kcal">${kal} ккал</div>
+      </div>
+      <div class="prog-bar"><div class="prog-bar-f" style="width:${pct}%"></div></div>
+      <div class="prog-macros">
+        <span style="color:var(--protein)">Б ${p}г</span>
+        <span style="color:var(--carbs)">У ${c}г</span>
+        <span style="color:var(--fat)">Ж ${f}г</span>
       </div>`;
-    });
-    html+='</div>';
-    body.innerHTML=html;
-  }
-  openOv('ovProgress');
-}
-
-/* ═══════════ INIT ═══════════ */
-render();
-// Pre-select correct tab display
-document.getElementById('pageDiary').style.display='flex';
-document.getElementById('pageDiary').style.flexDirection='column';
-document.getElementById('pageRecipes').style.display='none';
-
-// Demo recipe if no recipes yet
-if(!RECS.length){
-  RECS.push({
-    id:'demo1',
-    name:'Pileći paprikaš',
-    emoji:'🍗',
-    servings:4,
-    desc:'1. Iseckati piletinu na kockice.\n2. Propržiti crni luk na ulju.\n3. Dodati papriku i piletinu.\n4. Kuvati 30 min na laganoj vatri.',
-    ingredients:[
-      {name:'Пилећа прса (кувана)',g:600},
-      {name:'Картофель варёный',g:400},
-      {name:'Olive oil',g:30},
-    ],
-    createdAt:Date.now()-86400000
+    list.appendChild(el);
   });
-  saveRecs();
 }
+
+/* ═══════ INIT ═══════ */
+render();
+openSettings(); // init sliders
+closeOv("ovSettings");
 </script>
 </body>
 </html>
